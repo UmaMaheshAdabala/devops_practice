@@ -1,0 +1,42 @@
+YAML - Yaml ain't Markup Language
+- data format to exchange data
+- Similar to Json & XML
+- In Yaml we can store only data not commands
+
+
+Serialization: Object to Byte Stream
+
+object -> SERIALIZER ->(Stream of bytes) ->YAML file(stores)
+
+DeSerialozation: Byte Stream to object
+
+
+-------------- Basic code ---------
+
+"apple" : "I am red fruit"
+1 : "This is my roll num"
+
+--- # This indicates that from here it is a another documents within same file
+
+#lists
+ - apple
+ - mango
+ - banana
+
+--- 
+
+cities: 
+ - Hyderabad
+ - new delhi
+ - mumbai
+
+---
+
+cities : [Hyderabad, Banglore]
+
+---
+
+{mango: "Hi this is mango", age: 3}
+
+
+... # This indicates end of file no more documents

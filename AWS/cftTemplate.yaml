@@ -1,0 +1,16 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: A sample CloudFormation template to create EC2 Instance
+Resources:
+  MyEC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-09a9858973b288bdd
+      InstanceType: t3.micro
+      KeyName: practice_1
+      SecurityGroupIds: 
+        - sg-075feb832f8e27081
+      Tags:
+        - Key: CFT_Instance
+          Value: MyCFInstance
+      

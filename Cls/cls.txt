@@ -1,0 +1,47 @@
+## Difference b/w mvn celan package and mvn clean install 
+
+Feature	                               mvn clean install	mvn clean package
+Cleans the project (target/ directory)	 ✅	                 ✅
+Compiles the code	                     ✅	                 ✅
+Runs tests	                             ✅ (unless skipped)	 ✅ (unless skipped)
+Packages the artifact (.jar/.war)	     ✅	                 ✅
+Installs artifact to local repository
+ (~/.m2/repository)	                     ✅                 	 ❌
+
+----------------------------------
+## Difference b/w SCP and CP
+
+Difference Between cp and scp in Linux
+Both cp and scp are used for copying files, but they serve different purposes:
+
+Feature	            cp (Copy)	                                           scp (Secure Copy)
+Purpose	    Copies files locally	                               Copies files between remote and local systems
+Syntax	    cp source destination	                               scp user@host:/source user@host:/destination
+Network Use	No, works only on the local filesystem	               Yes, works over SSH (Secure Shell)
+Security	No encryption	                                       Encrypted (SSH-based)
+Speed	    Faster (local copy)	                                   Slower (depends on network speed)
+Permissions	Preserves file permissions if used with -p	       Preserves file permissions by default
+Compression	No built-in compression	                           Supports compression with -C
+Example Usage	cp file.txt /home/user/	                       scp file.txt user@remote:/home/user/
+--------------------------------------
+## Difference Between find and grep in Linux
+Both find and grep are used for searching, but they serve different purposes:
+
+Feature	find	                                                        grep
+Purpose	Searches for files & directories	                            Searches for text patterns inside files
+Search Scope	File system (directories & filenames)	                File content (lines inside files)
+Use Case	Finding a file by name, size, type, etc.	                Searching for a word, phrase, or pattern inside files
+Syntax	find /path -name "filename"	                                    grep "pattern" filename
+Recursive by Default?	Yes	                                            No (-r needed for recursive search)
+Supports Regular Expressions?	Limited (-regex option)	                Yes (grep -E)
+Example Usage	find /home -name "*.txt"	                            grep "error" /var/log/syslog
+
+----------------------------------------
+## Key Differences Between find and locate
+Feature	find	locate
+Search Method	Searches in real-time by scanning the file system	Uses a pre-built database (updatedb) for fast searching
+Speed	Slower (real-time search)	Faster (pre-indexed search)
+Accuracy	Always up-to-date	May show outdated results if the database is not updated
+Syntax Example	find /home -name "file.txt"	locate file.txt
+Search Scope	Can search by name, size, type, permissions, etc.	Only searches by file name
+Database Dependency	Does not require a database	Uses mlocate database, which needs to be updated manually or automatically via cron
