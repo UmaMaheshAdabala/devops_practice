@@ -569,5 +569,3 @@ Here’s a list of Linux commands that perform similar tasks but serve different
 11. **Show Disk Usage**
     - `df -h` - Shows disk space usage.
     - `du -sh <dir>` - Shows the size of a specific directory.
-
-Would you like any additional details or modifications? 🚀
