@@ -1,4 +1,4 @@
--- IAM ---
+## IAM ---
 
     Identity and Access Management
         - Groups
@@ -7,12 +7,13 @@
     We can create the above using IAM. In organization we wont work as an root user. We login as IAM User and we can give only some permissions as part of Policies.
     We can also Group the users based on their tasks
 
--- VPC ---
+## VPC ---
+
     Virtual Private Cloud
 
     This is a secure place where you can create your Instance
     In this vpc you can create subnets
-    For secutiy we can use 
+    For secutiy we can use
     - Security Groups (At ec2 Level)
     - NACL (At subnet level)
     - NAT for subnets
@@ -21,20 +22,21 @@
     - Inbound rules - The ports that we can allow from which the clients can come and access the EC2 Instance. (Deney all by default)
     - outbound rules -  The ports that the server uses to connect to outside the instance. (allow all except 25 by default )
 
--- Route 53 --
+# Route 53 --
+
     Route 53 helps in DNS Registration
-    Route table helps in finding ip with help of domain name 
+    Route table helps in finding ip with help of domain name
     And Checks the Hosted Zones
     And also Health Checks
     Route table defines network traffic also
 
--- VPC DEPLOY --
- 
+## VPC DEPLOY --
+
     Create VPC in aws with vpc and more
-    configure the required things and create it 
+    configure the required things and create it
     Then before creating EC2 instance create Auto Scaling Group
 
-    -- Auto Scaling Group -- ( Automatically scales the no of EC2 Instances based on the traffic)
+# Auto Scaling Group -- ( Automatically scales the no of EC2 Instances based on the traffic)
 
         Go to EC2 and search for Auto Scaling Group
         First create Template for AutoScaling Group
@@ -52,7 +54,7 @@
         Click Next
         Give VPC and Availability Zones- select both private Zones
         Click next and next
-        Give desired capacity as 2 and min as 1 and max as 4 then next to last and launch 
+        Give desired capacity as 2 and min as 1 and max as 4 then next to last and launch
 
         -- Jump Host or Bastian Host
         Create the EC2 Instance with name of bastian_host (name is of your wish)
@@ -60,9 +62,9 @@
         Launch it
 
     --Terminal--
-    
+
         You have ssh to private subnets from your bastian Host
-        So you have first copy the pem file from local to ubuntu 
+        So you have first copy the pem file from local to ubuntu
         cmd: sudo scp -i /Users/umesh/Downloads/practice_1.pem /Users/umesh/Downloads/practice_1.pem ubuntu@<IPADDRESS>:/home/ubuntu
         Then you can login to ubuntu server using: ssh -i pem_file_name ubuntu@<IPADDRESS>
 
@@ -71,7 +73,7 @@
         use ssh -i pem_file_name ubuntu@<IPADDRESS>
         now deploy your application here
         And also login to second subnet and upload other project there
-    
+
     -- Load Balancer --
         Go to Load Balancer
         Then give name
@@ -88,7 +90,6 @@
         And launch
 
         using the DNS provide copy and paste it in browser
-
 
 --- AWS CLI ----
 
@@ -110,12 +111,11 @@
     So first write the YAML file for your requirement
     Go to aws console and open CF stack and upload your YAML file and submit
 
-
 --- AWS CI/CD ---
-    --- AWS CODECOMMIT --- (similar to GitHub) // Not used mostly
-    --- CI ---
-        --- AWS CodeBuild ---
-            Responsible for code checkout, code build, code scan, image build, image scan, image push
+--- AWS CODECOMMIT --- (similar to GitHub) // Not used mostly
+--- CI ---
+--- AWS CodeBuild ---
+Responsible for code checkout, code build, code scan, image build, image scan, image push
 
             GoTo AWS CODEBUILD and create a Build
             Give the repository details and then write the  build file / upload it
@@ -123,7 +123,7 @@
             Then we have to use AWS System Manager to store Credentials of docker file etc..
 
         --- CODE PIPE LINE --- THIS INVOKES CODE BUILD as well as CODEDEPLOY
-            Create a code pipeline and give github auth to it 
+            Create a code pipeline and give github auth to it
             Give the CODEBUILD that you created
 
     --- CD ---
@@ -139,12 +139,6 @@
         Then go to create deploy and create deploy
         Before providing GITHUB details make sure that we have appspect.yml and scripts/start_container.yml amd scripts./stop_container.yml in root level of repo folder
         Then create it
-        Once created Goto code pipeline and add this code deploy also 
+        Once created Goto code pipeline and add this code deploy also
         Then CI/CD is completed
-        
 
-
-
-
-
-   
