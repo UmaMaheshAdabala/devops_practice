@@ -53,3 +53,9 @@
   then to add credentials and we add username and password and the id should be the name that you used inside the jenkinsfile that you wrote.
 - And add github token also and the id should be same as in jenkins file.
 - Restart jenkins
+
+## Shared_Libraries
+
+- By using SharedLibraries in jenkins we can reduce the number of lines in code, errors, duplications in code.
+- we will write the repetative code in a file and call it when ever we need it.
+- For each method we create a file and we use file name to execute the action.
