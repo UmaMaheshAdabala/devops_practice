@@ -160,7 +160,7 @@ Responsible for code checkout, code build, code scan, image build, image scan, i
 
 ## Difference Between Internet Gateway, VPC Endpoints, and VPC Interface Endpoints in AWS
 
-Feature
+Feature---
 
 Internet Gateway (IGW)
 
@@ -168,7 +168,7 @@ VPC Endpoints (Gateway Endpoint)
 
 VPC Interface Endpoints
 
-Purpose
+Purpose---
 
 Enables public internet access
 
@@ -176,7 +176,7 @@ Enables private access to AWS services without internet
 
 Enables private access to AWS services using ENI (Elastic Network Interface)
 
-Connectivity
+Connectivity---
 
 Routes traffic between VPC and the internet
 
@@ -184,7 +184,7 @@ Routes traffic to AWS services like S3 & DynamoDB via a private route
 
 Connects AWS services via ENI within the VPC
 
-Public/Private
+Public/Private---
 
 Public
 
@@ -192,7 +192,7 @@ Private
 
 Private
 
-Components Used
+Components Used--
 
 Internet Gateway (IGW)
 
@@ -200,7 +200,7 @@ Gateway Endpoint (Added to Route Table)
 
 Interface Endpoint (Uses ENI)
 
-Use Case
+Use Case---
 
 When instances need internet access
 
@@ -208,7 +208,7 @@ When instances need to connect to S3 or DynamoDB privately
 
 When instances need private access to AWS services like SSM, Secrets Manager, or API Gateway
 
-Cost
+Cost---
 
 Free
 
@@ -473,6 +473,246 @@ aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
   - So to have more security we use custom trust policy.
   - And also we can't directly assign role to user in AWS Account Trust Policy util unless we have explicit permissions. or else we have to update the Trust policy with specific user Name.
 
+  - IAM ROLE from one account to another account(ONE ROLE TO ACCESS OTHER ROLE and that ROLE has ACCESS to EC2)👇
+
+  - we use lambda function and lambda function has access to Role in 1st account
+  - we create a Role in 2nd account
+  - Give EC2 permissions to that role.
+  - Then in the trust policies give 1st role name
+  - In the first account create a Role and assume the role that was created in the 2nd Acount.
+  - Create a lambda function and attach it to the 1st account role.
+  - Then you can access the EC2 Instance in the second account with the role in first account.
+
+  ### CHAT GPT (CRR)
+
+  Thanks for sharing the trust policy! 👌 You're **almost there**, and the trust policy you posted is **correct** for allowing AWS Account `257394459123` (Account B) to assume the role.
+
+---
+
+### ✅ Let’s recap what should be in place:
+
+#### 🛠️ From **Account A (Your Account)**:
+
+1. You've created a role with:
+   - Trust policy allowing `arn:aws:iam::257394459123:root`
+2. You've attached the right **permissions** (e.g., EC2 access) to the role.
+3. The **role name** is exactly what you’re entering in Account B (case-sensitive).
+
+#### 💡 Make sure you’re sharing the **Role Name**, not the Role ARN.
+
+---
+
+### 🔑 In **Account B (257394459123)** – When Switching Role:
+
+Here’s what to enter on the "Switch Role" screen in the AWS Console:
+
+| Field          | Value                           |
+| -------------- | ------------------------------- |
+| **Account ID** | `YOUR_ACCOUNT_A_ID` (12 digits) |
+| **Role Name**  | `ExactlyAsCreatedInAccountA`    |
+
+✅ Don't use the ARN here — only Account ID and Role Name.
+
+---
+
+### 🧪 Still Getting Error?
+
+Let’s verify 3 common mistakes:
+
+#### 🔸 **1. Role Name Mismatch**
+
+Double-check you're not pasting the **ARN** like this:
+
+```
+arn:aws:iam::111122223333:role/CrossAccountEC2AccessRole
+```
+
+Instead, enter only:
+
+```
+CrossAccountEC2AccessRole
+```
+
+#### 🔸 **2. Account ID Typo**
+
+Ensure you're entering the correct **Account A ID** when switching roles — not Account B’s ID.
+
+#### 🔸 **3. Missing Permission to Assume Role**
+
+In **Account B**, the user must have **permission to call `sts:AssumeRole`**. You can attach a policy like this to the IAM user in Account B:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::ACCOUNT_A_ID:role/CrossAccountEC2AccessRole"
+    }
+  ]
+}
+```
+
+---
+
+### ✅ Final Check – Summary
+
+| What to Verify                       | Where                      |
+| ------------------------------------ | -------------------------- |
+| Trust policy contains Account B ID   | In Account A IAM Role      |
+| Role name matches exactly            | Use in Account B to switch |
+| Account A's ID is entered correctly  | In Account B during switch |
+| `sts:AssumeRole` permission is given | IAM user in Account B      |
+
+---
+
+If you'd like, you can:
+
+- Tell me the **exact error message** you're seeing
+- Share the **Role Name**
+- Confirm **Account A ID** you're entering when switching
+
+And I’ll pinpoint it for you 🔍
+
+## GPT
+
+- Great question! 🔐 Accessing EC2 instances in another AWS account is a **common multi-account setup**, especially in enterprises with dev/test/prod environments or multiple teams.
+
+Here’s a step-by-step on **how to securely access EC2 instances in another AWS account** (e.g., Account A accessing EC2 in Account B):
+
+---
+
+## 🎯 Goal:
+
+You want to **SSH into EC2 instances** or **manage them via CLI/API** in **Account B** from **Account A**, using **IAM Roles and Trust Relationships**.
+
+---
+
+## ✅ Option 1: **Use IAM Role + AssumeRole**
+
+This is the **recommended and secure method**.
+
+---
+
+### 🧭 Step-by-Step
+
+### 🔧 1. **Create an IAM Role in Account B** (EC2-owner account)
+
+This role allows users from Account A to assume it and manage EC2.
+
+#### Trust Relationship:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT_A_ID:root"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+#### Permissions (Example for EC2 access):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:StartInstances",
+        "ec2:StopInstances",
+        "ec2:TerminateInstances"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+Give the role a name like: `CrossAccountEC2AccessRole`.
+
+---
+
+### 🧑‍💻 2. **In Account A**, allow your IAM user or role to **assume** that role
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::ACCOUNT_B_ID:role/CrossAccountEC2AccessRole"
+    }
+  ]
+}
+```
+
+---
+
+### 🚀 3. **Use the Role to Access EC2 Instances**
+
+From AWS CLI in Account A:
+
+```bash
+aws sts assume-role \
+  --role-arn arn:aws:iam::ACCOUNT_B_ID:role/CrossAccountEC2AccessRole \
+  --role-session-name ec2-session
+```
+
+You’ll get **temporary credentials** (Access Key, Secret Key, Session Token). Use them to run EC2 commands:
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_SESSION_TOKEN=...
+
+aws ec2 describe-instances --region us-east-1
+```
+
+---
+
+### 🧷 Optional: Automate SSH Access
+
+If you want to **SSH into EC2 in Account B**:
+
+1. Share the **key pair** or use **Session Manager (SSM)**
+2. Make sure the EC2 instance has:
+   - The correct **security group** (allow SSH or SSM)
+   - An **IAM instance profile** if using SSM
+
+Using **SSM Session Manager** is safer and doesn’t need key pairs or open ports:
+
+- Install SSM Agent on EC2
+- Attach IAM role with `AmazonSSMManagedInstanceCore`
+- Use:
+
+```bash
+aws ssm start-session --target instance-id
+```
+
+---
+
+## 🤝 Summary
+
+| Task                  | Done In   | Description                              |
+| --------------------- | --------- | ---------------------------------------- |
+| Create IAM Role       | Account B | Allows Account A to assume it            |
+| Set Trust Policy      | Account B | Grants trust to Account A                |
+| Set Assume Permission | Account A | Allows user/role to assume the role in B |
+| Use AssumeRole API    | Account A | Get temporary creds and access EC2       |
+
+---
+
 ## Best Practices
 
 ## IAM Reports
@@ -559,3 +799,236 @@ Best for managing permissions within a single AWS account.
   - Similarly create set for 2nd one also.
   - Then goto organization and add the user that you created in Identity to which account you want.
   - Then give permission set to the accound based on the reqyuirement.
+
+---
+
+### S3 SIMPLE STORAGE SERVICE
+
+- Object Storage service
+
+- Provides: 1. Industry-leading Scalabilit 2. Data Availability 3. Data Security 4. Performance
+
+## Benifits of S3
+
+- Performance
+- Scalability
+- Availability
+- Low Cost
+- Security
+
+## Objects and Buckets in S3
+
+- Objects are fundemental entities stored in S3.
+- Buckets are containers where objects are stored
+
+## Types of S3
+
+- S3 Standard, S3 Standard-IA, S3 Intellegent- Tiering, S3 One Zone-IA, S3 Glacier, S3 Glacier Deep Archive.
+
+- S3 Standard: Used when we have to use data frequently.
+- S3 Standard-IA: Used when we won't use the bucket directly.
+- Amazon Glacier: Suitable where data can be archived, and high performance is not required.
+- One Zone: Basically s3 stores in around 3 Availability Zones. But this will be stored in only 1 Zone so cost is reduced.
+
+- AMAZON S3 Standard Reduced Redundancy Storage: It is used where the data is non critical and reproduced quickly.
+
+## Features of S3
+
+- Life Cycle : This will automatically analize your tasks and move the buckets b/w types of s3. maintaing data security availability and mainly cost in consideration.
+
+## Bucket Policy
+
+- It is an IAM Policy which lets you allow and deny permissions to your S3 resources.
+- With this you also define security parameters for more than one file in desired bucket.
+
+## Data Encryption
+
+- The Data in the bucket is Encrypted by AES-256 Encryption.
+
+## CRR IN S3 (Cross Region Replication)
+
+- CRR allows automically copying of every object uploaded to your buckets into different AWS region.
+
+## Transfer Acceleration
+
+- It allows easy and secure transfer of files over long distances b/w client and S3
+
+---
+
+## GITHUB
+
+What is Amazon S3?
+
+Simple Storage Service is a scalable and secure cloud storage service provided by Amazon Web Services (AWS). It allows you to store and retrieve any amount of data from anywhere on the web.
+
+What are S3 buckets?
+
+S3 buckets are containers for storing objects (files) in Amazon S3. Each bucket has a unique name globally across all of AWS. You can think of an S3 bucket as a top-level folder that holds your data.
+
+Why use S3 buckets?
+
+S3 buckets provide a reliable and highly scalable storage solution for various use cases. They are commonly used for backup and restore, data archiving, content storage for websites, and as a data source for big data analytics.
+
+Key benefits of S3 buckets
+
+S3 buckets offer several advantages, including:
+
+Durability and availability: S3 provides high durability and availability for your data.
+Scalability: You can store and retrieve any amount of data without worrying about capacity constraints.
+Security: S3 offers multiple security features such as encryption, access control, and audit logging.
+Performance: S3 is designed to deliver high performance for data retrieval and storage operations.
+Cost-effective: S3 offers cost-effective storage options and pricing models based on your usage patterns.
+Creating and Configuring S3 Buckets
+Creating an S3 bucket
+
+To create an S3 bucket, you can use the AWS Management Console, AWS CLI (Command Line Interface), or AWS SDKs (Software Development Kits). You need to specify a globally unique bucket name and select the region where you want to create the bucket.
+
+Choosing a bucket name and region
+
+The bucket name must be unique across all existing bucket names in Amazon S3. It should follow DNS naming conventions, be 3-63 characters long, and contain only lowercase letters, numbers, periods, and hyphens. The region selection affects data latency and compliance with specific regulations.
+
+Bucket properties and configurations
+
+Versioning: Versioning allows you to keep multiple versions of an object in the bucket. It helps protect against accidental deletions or overwrites.
+Bucket-level permissions and policies
+
+Bucket-level permissions and policies define who can access and perform actions on the bucket. You can grant permissions using IAM (Identity and Access Management) policies, which allow fine-grained control over user access to the bucket and its objects.
+
+Uploading and Managing Objects in S3 Buckets
+Uploading objects to S3 buckets
+
+You can upload objects to an S3 bucket using various methods, including the AWS Management Console, AWS CLI, SDKs, and direct HTTP uploads. Each object is assigned a unique key (name) within the bucket to retrieve it later.
+
+Object metadata and properties
+
+Object metadata contains additional information abouteach object in an S3 bucket. It includes attributes like content type, cache control, encryption settings, and custom metadata. These properties help in managing and organizing objects within the bucket.
+
+File formats and object encryption
+
+S3 supports various file formats, including text files, images, videos, and more. You can encrypt objects stored in S3 using server-side encryption (SSE). SSE options include SSE-S3 (Amazon-managed keys), SSE-KMS (AWS Key Management Service), and SSE-C (customer-provided keys).
+
+Lifecycle management
+
+Lifecycle management allows you to define rules for transitioning objects between different storage classes or deleting them automatically based on predefined criteria. For example, you can move infrequently accessed data to a lower-cost storage class after a specified time or delete objects after a certain retention period.
+
+Multipart uploads
+
+Multipart uploads provide a mechanism for uploading large objects in parts, which improves performance and resiliency. You can upload each part in parallel and then combine them to create the complete object. Multipart uploads also enable resumable uploads in case of failures.
+
+Managing large datasets with S3 Batch Operations
+
+S3 Batch Operations is a feature that allows you to perform bulk operations on large numbers of objects in an S3 bucket. It provides an efficient way to automate tasks such as copying objects, tagging, and restoring archived data.
+
+Advanced S3 Bucket Features
+S3 Storage Classes
+
+S3 offers multiple storage classes, each designed for different use cases and performance requirements:
+
+Screenshot 2023-07-06 at 7 16 51 PM
+
+S3 Replication
+
+S3 replication enables automatic and asynchronous replication of objects between S3 buckets in different regions or within the same region. Cross-Region Replication (CRR) provides disaster recovery and compliance benefits, while Same-Region Replication (SRR) can be used for data resilience and low-latency access.
+
+S3 Event Notifications and Triggers
+
+S3 event notifications allow you to configure actions when specific events occur in an S3 bucket. For example, you can trigger AWS Lambda functions, send messages to Amazon Simple Queue Service (SQS), or invoke other services using Amazon SNS when an object is created or deleted.
+
+S3 Batch Operations
+
+S3 Batch Operations allow you to perform large-scale batch operations on objects, such as copying, tagging, or deleting, across multiple buckets. It simplifies managing large datasets and automates tasks that would otherwise be time-consuming.
+
+Security and Compliance in S3 Buckets
+S3 bucket security considerations
+
+Ensure that S3 bucket policies, access control, and encryption settings are appropriately configured. Regularly monitor and audit access logs for unauthorized activities.
+
+Data encryption at rest and in transit
+
+Encrypt data at rest using server-side encryption options provided by S3. Additionally, enable encryption in transit by using SSL/TLS for data transfers.
+
+Access logging and monitoring
+
+Enable access logging to capture detailed records of requests made to your S3 bucket. Monitor access logs and configure alerts to detect any suspicious activities or unauthorized access attempts.
+
+S3 Bucket Management and Administration
+S3 bucket policies
+
+Create and manage bucket policies to control access to your S3 buckets. Bucket policies are written in JSON and define permissions for various actions and resources.
+
+S3 access control and IAM roles
+
+Use IAM roles and policies to manage access to S3 buckets. IAM roles provide temporary credentials and fine-grained access control to AWS resources.
+
+S3 APIs and SDKs
+
+Interact with S3 programmatically using AWS SDKs or APIs. These provide libraries and methods for performing various operations on S3 buckets and objects.
+
+Monitoring and logging with CloudWatch
+
+Utilize Amazon CloudWatch to monitor S3 metrics, set up alarms for specific events, and collect and analyze logs for troubleshooting and performance optimization.
+
+S3 management tools
+
+AWS provides multiple management tools, such as the AWS Management Console, AWS CLI, and third-party tools, to manage S3 buckets efficiently and perform operations like uploads, downloads, and bucket configurations.
+
+Troubleshooting and Error Handling
+Common S3 error messages and their resolutions
+
+Understand common S3 error messages like access denied, bucket not found, and exceeded bucket quota. Troubleshoot and resolve these errors by checking permissions, bucket configurations, and network connectivity.
+
+Debugging S3 bucket access issues
+
+Investigate and resolve issues related to access permissions, IAM roles, and bucket policies. Use tools like AWS CloudTrail and S3 access logs to identify and troubleshoot access problems.
+
+Data consistency and durability considerations
+
+Ensure data consistency and durability by understanding S3's data replication and storage mechanisms. Verify that data is correctly uploaded, retrieve objects using proper methods, and address any data integrity issues.
+
+Recovering deleted objects
+
+If an object is accidentally deleted, you can often recover it using versioning or S3 event notifications. Additionally, consider enabling Cross-Region Replication (CRR) for disaster recovery scenarios.
+
+### EC2
+
+## AMI (AMAZON MACHINE IMAGE):
+
+- An AMI is a template that is used to create a new instance/ machine based on user requirements
+
+- AMI contains Software Information, Operating System Information, Volume Information, Access Permissions.
+
+- PREDEFINED AMI's ( Predefined by amazon and can be modified) and Custom AMI's (Created by user and can be reused).
+
+## Instance Type:
+
+1. Compute Optimized: Lot of computing and Optimizing Power
+
+2. Memory Optimized: More Caching Power.
+
+3. GPU Optimized: Used for Applications that used GPU like Games
+
+4. Storage Optimized: Used for Storage Servers
+
+5. General Purpose: All above are equally managed, used when we are not sure about above all.
+
+## Configure Instance:
+
+- Public, Private IP's, IAM Roles, subnets, SG's
+
+## Storage
+
+1. Ephemeral Storage(Temporary and Free)
+2. Amazon Elastic Block Storage (Permanent and paid)
+3. Amazon S3
+
+## SNS (Simple Notification Service)
+
+### SSH into Private Instance from Bastian Host
+
+- Open Pagent and Click Add Key
+- Select ppk file
+- Open putty and in auth section select ALLOW AGENT Forwarding
+- Then do ssh ubuntu@<privateINstanceIP>.
+- Good to go.
+
+## Other ways to ssh into private instance

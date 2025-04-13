@@ -22,6 +22,11 @@
 - curl to retrive the information from internet // similar to postman
 - less file.txt helps to view large files one page at a time.
 
+## ZIP ABD UNZIP
+
+- mkdir myfolder
+- unzip myfile.zip -d myfolder
+
 ## Searching for file
 
 - find /path -name "file.txt"
@@ -313,6 +318,7 @@ for i in {1.100}; do echo $i; done
 
 # Ping (Packet Interbet Grouper)
 
+- CHECK IF HOST IS REACHABLE
 - we can ping from one server to other server using- " ping <ipaddress-of-2nd-server> "
 - we can also configure the 2nd server name in /etc/hosts file and the we can ping through name.
 - if ping is not working that doesn't mean that server is not working so we use "telnet"
@@ -323,6 +329,7 @@ for i in {1.100}; do echo $i; done
 
 # telnet ( Telephone N/W)
 
+- CHECK IF SPECIFIC PORT IS OPEN
 - " telnet <ipAddress / DNS Name> <port> "
 - we can use telnet to connect to server that is in other security group
 
