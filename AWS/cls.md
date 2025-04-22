@@ -1382,4 +1382,121 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 
 - A Routing policy is a set of rules that determines how traffic is routrf b/w different endpoints, such as servers or services.
 
-- fyfg
+# Health check at EndPoint
+
+- Route 53 sends HTTP/HTTPS/TCP requests to monitor the health of your application or resource.
+  a. HTTP / HTTPS Health Checks
+  b. TCP Health Checks
+
+# Parental Health Check
+
+- The parent health check will monitor upto 255 child health check.
+- If certain no.of health checks are healthy then the parent is considered as healthy.
+
+# Cloud watch alaram Health check
+
+## Routing Policy
+
+# Simple Routing policy
+
+- Use Case: When you have a single resource (like one web server) that performs a given function.
+
+- How It Works: Maps a domain to a single IP or hostname.
+
+- No health checks involved.
+
+# Failover Routing Policy
+
+- Use Case: High availability setups (primary and secondary resources).
+
+- How It Works: Routes traffic to a primary resource unless it fails a health check, then traffic is routed to the secondary.
+
+# Geolocation Routing Policy
+
+- Use Case: Deliver content based on the user’s location (country, continent, or state).
+
+- How It Works: You define different endpoints for different geographic locations.
+
+# Geo Proximity Routing Policy (Traffic Flow Only)
+
+- Use Case: Route traffic based on the geographic location of users and resources, and optionally, bias it.
+
+- How It Works: Can shift traffic based on distance or bias settings, but requires Traffic Flow feature (not supported in standard console routing).
+
+- Bias Distance:
+  - Positive Bias Distance: actual distance \* [1-(bias/100)]
+  - Negatie Bias Distance : actual distance / [1+(bias/100)]
+
+# Latency Routing Policy
+
+- Use Case: Route traffic based on the lowest latency for the user.
+
+- How It Works: Directs requests to the AWS Region with the lowest latency (fastest response time).
+
+# IP Based Routing Policy
+
+- By using IP based routing we can fine-tune our DNS routing by matching the Client IP with CIDR block ID of the source IP's and send the traffic to matched IP Address.
+
+# Multi-Value Answer Routing Policy
+
+- Use Case: Similar to simple routing but supports health checks and returns multiple IPs.
+
+- How It Works: Returns up to 8 healthy records randomly to increase availability and load distribution.
+
+# Weighted Routing Policy
+
+- Use Case: Distribute traffic across multiple resources in proportions (for A/B testing or gradual traffic shifts).
+
+- How It Works: You assign a weight (e.g., 70% vs 30%) to each resource.
+
+### CLOUDFRONT
+
+- Amazon CloudFront is a Content Delivery Network (CDN) service from AWS. It delivers your website’s static and dynamic content to users faster and more securely by caching it in edge locations around the world.
+
+- Instead of always fetching content from your main server (origin), CloudFront serves it from the nearest AWS edge location to the user—reducing latency, improving load times, and offloading traffic from your origin.
+
+## CloudFront Signed URL and Signed Cookies
+
+- CloudFront Signed URLs and Signed Cookies are used to restrict access to your private content.
+
+- They help ensure that only authorized users can access your files (like videos, PDFs, images) hosted behind CloudFront.
+
+- Your app/server generates a signed URL or cookie using a CloudFront key pair (public-private key).
+
+- The user receives this temporary access.
+
+- CloudFront validates the signature when a request is made.
+
+- If valid → serves the content. If invalid/expired → returns 403 Forbidden.
+
+## Restrict access to objects on s3 using cloud front with OAI (Origin Access Identity).
+
+- OAI used to share the private content via cloud front.
+
+- First create a s3 bucket and upload a static web site
+- Restrict public access to it
+- Then Create a CloudFront distributer and then select the OAI
+- Then allow the CF to change the bucket policy.
+- Then access it via CF domain.(This will take some time).
+
+### GLOBAL ACCELERATOR
+
+- AWS Global Accelerator is a networking service that improves the availability, performance, and reliability of your internet-facing applications.
+
+- Instead of sending user traffic across the public internet, Global Accelerator routes it through Amazon’s highly available and optimized global network infrastructure.
+
+- It routes the traffic to closest edge location via ANYCAST, then by routing it to closest regional endpoint over AWS global network.
+
+- How it works: lets say we are in india and they have hosted the application in us-east 1a and us-east-1b and ap-mumbai. then we create 2 end point groups
+  1 for us and one for india.
+  Then client (from india)----> GLOBAL ACCELERATOR ----> ENDPOINT GROUP(india) ----> ap-mumbai region.
+- It provides two static IP's.
+
+# Handson
+
+- create 2 instances in two different loactions.
+- Then create global accelerator
+- Give name, and add listener i.e add port to which we want to listen.
+- Then add end point group
+- Then add end points
+- then use DNS name to access them.
