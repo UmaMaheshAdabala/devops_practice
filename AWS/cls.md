@@ -1382,4 +1382,4 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 
 - A Routing policy is a set of rules that determines how traffic is routrf b/w different endpoints, such as servers or services.
 
--
+- fyfg
