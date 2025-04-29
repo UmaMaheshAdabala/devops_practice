@@ -1488,7 +1488,7 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 - It routes the traffic to closest edge location via ANYCAST, then by routing it to closest regional endpoint over AWS global network.
 
 - How it works: lets say we are in india and they have hosted the application in us-east 1a and us-east-1b and ap-mumbai. then we create 2 end point groups
-  1 for us and one for india.
+  1 for US and one for india.
   Then client (from india)----> GLOBAL ACCELERATOR ----> ENDPOINT GROUP(india) ----> ap-mumbai region.
 - It provides two static IP's.
 
@@ -1500,3 +1500,163 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 - Then add end point group
 - Then add end points
 - then use DNS name to access them.
+
+### AWS SEREVERLESS
+
+- AWS server less means giving responsibilites of the opearations to the AWS and just focusing only on the development more
+- fast and reliable
+- cost efficient
+- reduces overhead.
+
+## AWS Lambds
+
+- AWS Lambda is a serverless compute service by AWS that lets you run your code without provisioning or managing servers.
+- No server to manage
+- continuous scaling
+- sub-second metering
+- consistemt performance
+
+🚀 Real-Time Example – Image Resizer App
+Scenario:
+Let’s say you run a photo-sharing app. Users upload big images. You want to create a thumbnail version of each uploaded image.
+
+How You’d Use Lambda:
+✅ Step 1: User uploads an image to an S3 bucket.
+
+✅ Step 2: S3 triggers a Lambda function.
+
+✅ Step 3: Lambda function resizes the image (e.g., to 100x100 pixels).
+
+✅ Step 4: Lambda saves the resized image to another S3 bucket.
+
+## AWS Lambda ways to trigger
+
+- Synchronous invoking ( we don't need to wait after invoking an API call)
+- Asynchronous invoking ( After invoking it is placed in QUEUE and it will get execute when it turn come in queue)
+- Poll based Invoking (lambda will handle the poll based services on your behalf)
+
+## AWS Concurrency
+
+- Concurrency: Number of requesthe that your function is serving at given time.
+  -Concurrency means how many instances of your Lambda function can run at the same time.
+
+- Every time a new request comes in, Lambda either reuses an existing execution environment or creates a new one to handle the request.
+
+- If 100 users hit your API at the same time, Lambda might run 100 copies (instances) of your function simultaneously — this is concurrency.
+
+# Reserved Concurrency
+
+- A function has reserved concurrency , no other fn can use that concurrency
+- To ensure that a fn can always reach a certain concurrency, you can configure the fn with reserved concurrency.
+- You reserve (book) a certain number of concurrency for your function only.
+
+- Example: You reserve 50 concurrency for Lambda A.
+
+- No matter how much load there is elsewhere, your function will always have up to 50 instances ready to serve.
+
+- It protects your function from being throttled when AWS account-level concurrency limits are reached.
+
+- PROBLEM HERE: If we have hier pool of reserved concurrency then the other fn with no reserved concurrency will face higher latency.
+
+# Provisoned Concurrency
+
+- Provisioned Concurrency pre-warms a set number of Lambda instances before they are needed.
+
+- It's made to eliminate cold starts.
+
+- When traffic arrives, Lambda doesn’t need to "boot up" — it instantly serves requests.
+
+- You pay for keeping these instances warm (even if they are idle).
+
+- You can integrate Application Auto scaling also for this.
+
+- Coffee shop again:
+- You pre-make 10 cups of coffee at the start of the day, expecting customers.
+
+- When customers come in, you hand them coffee immediately — no wait.
+
+- But if no one comes, those 10 coffees still cost you (wasted money).
+
+# What happens if more requests come than provisioned concurrency?
+
+Suppose:
+
+Provisioned Concurrency = 50
+
+Suddenly 100 requests come at the same time.
+
+👉 Here's what happens:
+
+First 50 requests are served instantly by the provisioned instances.
+
+Remaining 50 requests behave like normal Lambda behavior:
+
+Lambda tries to scale up automatically (burst scaling).
+
+BUT scaling new instances will have cold starts because they are not pre-warmed.
+
+If the burst limits (per-region burst rules) allow it, new instances are created.
+
+Otherwise, requests will be throttled (rejected) until concurrency becomes available.
+
+## Lambda @EDGE
+
+- Lambda@Edge is a service that lets you run Lambda functions at AWS edge locations (near the user) instead of inside a specific region (like us-east-1, us-west-2).
+
+- It's closely tied to Amazon CloudFront (which is AWS's CDN — Content Delivery Network).
+
+- Real-World Example 📦
+  Imagine Netflix:
+
+A user in Tokyo opens Netflix.
+
+Netflix wants to show a special promotion only for Japan users.
+
+Instead of routing the user’s request back to a big server in the US, Netflix uses Lambda@Edge to run logic at Tokyo Edge location:
+
+"Is user from Japan? → Show promotion!"
+
+Fast, local, and efficient!
+
+### API GATEWAY
+
+- "API Gateway is the smart receptionist that handles, secures, and forwards every API request to your backend perfectly and professionally." 🔥
+
+## USES
+
+- Create and Manage APIs
+- Secure Your APIs
+- Connect Frontend to Backend
+- Throttling and Rate Limiting
+- API Monitoring and Logging
+- Request and Response Transformation
+- Caching
+- Cost Optimization
+
+### AWS DYNAMODB
+
+- It is a nosql database provided by AWS, that stores data as key-value pair.
+
+- AWS Manages:
+- Automatic data replication over 3 availability zones in a single region.
+- Data backup to S3.
+- Integration with Elastic Map Reduce(EMR), Data pipeline, kinesis
+- DynamoDB used DAX ( DynamoDB Accerelators) for Caching.
+
+- AMAZON DynamoDB Stream is a ordered flow of information about changes
+
+- Once you create Table(Region A) it will be in provisioning state.
+- Then DynamoDB will create certain amount of partitions in the region.
+- Once all the partition is created and it is in active state then we can Read, update, write the data.
+- It will create a Synchronous Replications.
+- And it uses DynamoDB streams to create realtime near cross region replications
+- If we want to replicate in multiple regions then it uses Async Replication with Global Tables.
+
+### CRUD Application
+
+- Create a DynamoDB Table
+- Create a LAMBDA Function with all API's
+- Create a HTTP API Gateway
+- Create Routes
+- Integrate the lambda fn with them
+- Done 👍
