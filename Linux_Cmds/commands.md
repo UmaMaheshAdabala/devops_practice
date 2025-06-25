@@ -402,3 +402,46 @@ for i in {1.100}; do echo $i; done
 ---
 
 ######
+
+# Abhishek
+
+## Change Owner of the file
+
+- chown <owner>:<group> <fileName>
+
+- kill <pid> to kill the process
+- kill -9 <pid> to forcefully kill the process and remove it
+- kill -3 <pid> to get the threads of the process.
+
+## priority
+
+- Starts from -19 to 20. less number more priority and higher number less priority.
+
+- `renice -n 10 -p <PID>`
+
+---
+
+- List all services `systemctl list-units--type=service`
+- we can start stop services like `systemctl start <serviceName>`
+
+---
+
+## Monitor
+
+- CPU - `nproc, top, htop`
+- Memory - `free`
+- disk space - `df -h`
+- folder disk info - `du -sh`
+
+## SED
+
+| Task                         | Command Example                              | What It Does                            |
+| ---------------------------- | -------------------------------------------- | --------------------------------------- |
+| **Substitute** (replace)     | `sed 's/old/new/' file.txt`                  | Replaces first occurrence per line      |
+| Replace globally             | `sed 's/old/new/g' file.txt`                 | Replaces all occurrences per line       |
+| Replace and save to new file | `sed 's/old/new/g' file.txt > newfile.txt`   | Writes changes to a new file            |
+| Edit in-place (overwrite)    | `sed -i 's/old/new/g' file.txt`              | Modifies the original file              |
+| Delete lines                 | `sed '/pattern/d' file.txt`                  | Deletes lines containing "pattern"      |
+| Print only matching lines    | `sed -n '/pattern/p' file.txt`               | Like `grep`                             |
+| Insert line before match     | `sed '/pattern/i\This is new line' file.txt` | Inserts before lines matching "pattern" |
+| Append line after match      | `sed '/pattern/a\This comes after' file.txt` | Appends after lines matching "pattern"  |
