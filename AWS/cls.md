@@ -450,26 +450,56 @@ aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
     - Then goto policies and create policy to Assume_Access and Role_Name
     - Then attach the policy to the user.
 
-  - Cross-Account Access: A company 'x' wants to access s3 service of other company 'y'
-    - First create a role in Y account by x accound_ID
-    - Then create a user in X account
-    - Create a Assume_Access Policy with ARN of role in Y
-    - Then attach the policy to the user in X.
+  - Cross-Account Access: A company 'x' wants to access s3 service of other company 'y' - First create a role in Y account by x accound_ID
 
-  3. Web Identity/SAML 2.O Federation
+  - Trust Policy
+    ---t
 
-     - The Web Identity/SAML 2.O Federation is a security feature that enables secure access to your AWS resources using temporary credentials obtained through external Identity providers(IdP) ex: google, github etc...
+        {
 
-     - They will use OAuth 2.0 and OpenID Connect (OIDC) / SAML 2.O Federation
-     - OAuth and OpenID Connect
-     - OAuth 2.0 will handle authorization aspect.
-     - OpenID Connect will handle Authentication and provides us the token. ex JWt
+    "Version": "2012-10-17",
+    "Statement": [
+    {
+    "Effect": "Allow",
+    "Principal": {
+    "AWS": "arn:aws:iam::ACCOUNT_A_ID:root"
+    },
+    "Action": "sts:AssumeRole"
+    }
+    ]
+    }
 
-     - SAML 2.0 (Security and Assertion Markup Language)
-     - In SAML it allows the user to authenticate once and gain access to multiplr applications without re-entering credentials.
-     - Uses XML rather than JWT.
+    ***
 
-  4. Custom Trust Policies
+        - Then create a user in X account
+        - Create a Assume_Access Policy with ARN of role in Y
+        - Then attach the policy to the user in X.
+
+    ```
+
+    ```
+
+  ## Cross Account Access (IAM --> EC2)
+
+  1. Create a role in account B and give ec2 full access to it on the name of Account A ID.
+  2. create a role in account A and select lambda as service and attach STS:AssumeRole policy on the name of role created in Account B
+  3. Attach the role to lambda fn.
+
+  ```
+  4. Web Identity/SAML 2.O Federation
+
+   - The Web Identity/SAML 2.O Federation is a security feature that enables secure access to your AWS resources using temporary credentials obtained through external Identity providers(IdP) ex: google, github etc...
+
+   - They will use OAuth 2.0 and OpenID Connect (OIDC) / SAML 2.O Federation
+   - OAuth and OpenID Connect
+   - OAuth 2.0 will handle authorization aspect.
+   - OpenID Connect will handle Authentication and provides us the token. ex JWt
+
+   - SAML 2.0 (Security and Assertion Markup Language)
+   - In SAML it allows the user to authenticate once and gain access to multiplr applications without re-entering credentials.
+   - Uses XML rather than JWT.
+
+  5. Custom Trust Policies
 
   - Basically it is a kind similar to AWS Account in Trust policy
   - But the difference is in AWS Account Trust Policy erevy one can assume the role as it will be mentioned as "root" in the trust policy.
@@ -490,6 +520,7 @@ aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
   ### CHAT GPT (CRR)
 
   Thanks for sharing the trust policy! 👌 You're **almost there**, and the trust policy you posted is **correct** for allowing AWS Account `257394459123` (Account B) to assume the role.
+  ```
 
 ---
 
@@ -806,7 +837,7 @@ Best for managing permissions within a single AWS account.
 
 ---
 
-### S3 SIMPLE STORAGE SERVICE
+# S3 SIMPLE STORAGE SERVICE
 
 - Object Storage service
 
@@ -993,7 +1024,7 @@ Recovering deleted objects
 
 If an object is accidentally deleted, you can often recover it using versioning or S3 event notifications. Additionally, consider enabling Cross-Region Replication (CRR) for disaster recovery scenarios.
 
-### EC2
+# EC2
 
 ## AMI (AMAZON MACHINE IMAGE):
 
@@ -1037,6 +1068,11 @@ If an object is accidentally deleted, you can often recover it using versioning 
 
 ## Other ways to ssh into private instance
 
+- eval "$(ssh-agent -s)"
+- ssh-add <pemkey>
+- ssh -A ec2-user@<publicIP>
+- ssh ec2-user@<privateIP>
+
 ### EBS Volume
 
 1. create EC2 Instance
@@ -1044,6 +1080,16 @@ If an object is accidentally deleted, you can often recover it using versioning 
 3. Attach Volume
 4. Verification: ---> lsblk ---> see disk partitions: fdisk -l ---> see filesystem: file -s <drive> ---> create file system: mkfs -t xfs <drive>
    ---> mount to folder: mount <drive> <folder>
+
+   ```t
+
+   lsblk
+   sudo fdisk -l
+   sudo file -s <drive>
+   sudo mkfs -t xfs <drive>
+   df -h
+   ls -lart
+   ```
 
 5. Snapshot: ---> create EC2 ---> create snapshot for the first volume ---> create volume for the snapshot
 6. The file system in the 1st volume will replicate here but we have to mount it to a folder. And then use it.
@@ -1321,7 +1367,7 @@ cat <<EOF > /var/www/html/index.html
 </html>
 EOF
 
-### ROUTE 53
+# ROUTE 53
 
 - It is a Cloud-Based Service provided by AWS that allows you to manage and route internet traffic for your Domain Names.
 - Amazon Route 53 is a highly available and scalable cloud domain name system(DNS) web service.
@@ -1453,7 +1499,7 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 
 - How It Works: You assign a weight (e.g., 70% vs 30%) to each resource.
 
-### CLOUDFRONT
+# CLOUDFRONT
 
 - Amazon CloudFront is a Content Delivery Network (CDN) service from AWS. It delivers your website’s static and dynamic content to users faster and more securely by caching it in edge locations around the world.
 
@@ -1473,6 +1519,8 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 
 - If valid → serves the content. If invalid/expired → returns 403 Forbidden.
 
+- Using cloud front we can send different info to different servers based on their location. For that we can use Lambda@Edge or Cloudfront Headers.
+
 ## Restrict access to objects on s3 using cloud front with OAI (Origin Access Identity).
 
 - OAI used to share the private content via cloud front.
@@ -1483,7 +1531,7 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 - Then allow the CF to change the bucket policy.
 - Then access it via CF domain.(This will take some time).
 
-### GLOBAL ACCELERATOR
+# GLOBAL ACCELERATOR
 
 - AWS Global Accelerator is a networking service that improves the availability, performance, and reliability of your internet-facing applications.
 
@@ -1581,6 +1629,14 @@ How You’d Use Lambda:
 
 - But if no one comes, those 10 coffees still cost you (wasted money).
 
+## Function URL
+
+- We can configure function URL to use the lambda from browser.
+
+## Environment Variables
+
+- we can configure env variables in lambda to maintain security.
+
 # What happens if more requests come than provisioned concurrency?
 
 Suppose:
@@ -1603,7 +1659,7 @@ If the burst limits (per-region burst rules) allow it, new instances are created
 
 Otherwise, requests will be throttled (rejected) until concurrency becomes available.
 
-## Lambda @EDGE
+# Lambda @EDGE
 
 - Lambda@Edge is a service that lets you run Lambda functions at AWS edge locations (near the user) instead of inside a specific region (like us-east-1, us-west-2).
 
@@ -1622,7 +1678,7 @@ Instead of routing the user’s request back to a big server in the US, Netflix 
 
 Fast, local, and efficient!
 
-### API GATEWAY
+# API GATEWAY
 
 - "API Gateway is the smart receptionist that handles, secures, and forwards every API request to your backend perfectly and professionally." 🔥
 
@@ -1637,7 +1693,7 @@ Fast, local, and efficient!
 - Caching
 - Cost Optimization
 
-### AWS DYNAMODB
+# AWS DYNAMODB
 
 - It is a nosql database provided by AWS, that stores data as key-value pair.
 
@@ -1750,7 +1806,7 @@ headers,
 };
 };
 
-### AWS Cloud Watch
+# AWS Cloud Watch
 
 - AWS CloudWatch is a powerful monitoring and observability service provided by Amazon Web Services. It enables you to gain insights into the performance, health, and operational aspects of your AWS resources and applications. CloudWatch collects and tracks metrics, collects and monitors log files, and sets alarms to alert you on certain conditions.
 - Cloud Watch is like a watch man for the cloud that will keep track on most of the aws activities.
@@ -1765,7 +1821,7 @@ headers,
   - Cost Optimization.
   - Scaling
 
-### AWS Config
+# AWS Config
 
 - AWS Config is a service that enables you to:
 
@@ -1777,7 +1833,7 @@ headers,
 
 - Get visibility into configuration history and drift.
 
-### AWS CLOUDTRAIL
+# AWS CLOUDTRAIL
 
 - AWS CloudTrail is a service that enables governance, compliance, and operational and risk auditing of your AWS account. It records all API calls made within your AWS environment, including actions taken through the AWS Management Console, AWS SDKs, command-line tools, and other AWS services.
 
@@ -1797,9 +1853,20 @@ headers,
 
 - Events are stored as log files in Amazon S3 and can be viewed in CloudTrail Event History.
 
-### AWS RDS
+# AWS Databases
 
-Amazon RDS is a managed relational database service that makes it easy to set up, operate, and scale a relational database in the cloud. It supports several database engines.
+- Mostly databases are divided based on VVV velocity(R/W speed), variety(Relational? Non-Relational), Volume(storage capacity).
+- Types: RDS, Aurora, DymanoDB, DocumentDB.....
+
+# AWS RDS
+
+- LINK `https://github.com/yeshwanthlm/YouTube/blob/main/aws-rds-masterclass.md`
+
+- Basically in self hosted DB we have to manage Hardware, OS, DB.
+- In EC2 we have to manage the OS and DB
+- But in RDS Hardware, OS, DB are managed by AWS. we can directly use them.
+
+- Amazon RDS is a managed relational database service that makes it easy to set up, operate, and scale a relational database in the cloud. It supports several database engines.
 
 Supported Database Engines:
 Amazon Aurora
@@ -1825,7 +1892,7 @@ Easy replication and scaling
 
 High availability with Multi-AZ deployments
 
-### 🔄 What Are Amazon RDS Read Replicas?
+## 🔄 What Are Amazon RDS Read Replicas?
 
 Read Replicas allow you to create one or more read-only copies of your primary (source) RDS database instance. These replicas asynchronously replicate data from the primary DB.
 
@@ -1849,7 +1916,7 @@ Read Replicas allow you to create one or more read-only copies of your primary (
 
 - Read replicas can be in the same region or different AWS regions (Cross-Region Replication).
 
-### 📦 1. Automated Backups (Managed by AWS)
+## 📦 1. Automated Backups (Managed by AWS)
 
 ✅ What Are They?
 Automated backups are daily backups of your RDS instance managed by AWS.
@@ -1869,7 +1936,7 @@ Transaction logs are backed up every 5 minutes.
 
 You can restore to any point in time within your retention window.
 
-### Manual Snapshots (User-Initiated)
+## Manual Snapshots (User-Initiated)
 
 ✅ What Are They?
 Manual snapshots are user-created backups of the RDS instance at a specific point in time.
@@ -1930,13 +1997,13 @@ Example Lambda Integration:
 
 Lambda → RDS Proxy → RDS → Responds back
 
-### 🚀 What is Amazon Aurora?
+# 🚀 What is Amazon Aurora?
 
 Amazon Aurora is a fully managed relational database from AWS that is compatible with MySQL and PostgreSQL, but much faster and more scalable than standard MySQL/PostgreSQL databases.
 
 📌 Think of Aurora as a supercharged version of MySQL/PostgreSQL — built for cloud-scale performance, availability, and resilience.
 
-### 🧠 Key Features of Amazon Aurora
+## 🧠 Key Features of Amazon Aurora
 
 Feature Description
 ✅ High Performance Up to 5x faster than MySQL and 3x faster than PostgreSQL
@@ -1979,7 +2046,7 @@ Crash recovery and failover are fast because only the compute layer is restarted
 | **Replication**         | Aurora Global Database replicates changes from primary to secondary within **<1 second** |
 | **Failover**            | You can promote a secondary region to become the new primary (manual)                    |
 
-### 🧠 What is Amazon SQS?
+# 🧠 What is Amazon SQS?
 
 Amazon SQS is a fully managed message queuing service that allows decoupling of components in a distributed application. It enables different parts of an application (or different services) to communicate reliably via messages, without requiring each part to be always available.
 
@@ -2557,3 +2624,217 @@ Let me know! 🚀
 ## LINK for ECS and ECR
 
 - `https://faun.pub/what-is-amazon-ecs-and-ecr-how-does-they-work-with-an-example-4acbf9be8415`
+
+### SSL/TLS
+
+- SSL (Secure Sockets Layer) and its successor TLS (Transport Layer Security) are cryptographic protocols that secure communication over a network — especially the Internet.
+
+🔧 Purpose:
+Encrypt data (so no one can eavesdrop)
+
+Authenticate the server (you’re talking to the real site, not a fake one)
+
+Preserve integrity (data isn’t modified in transit)
+
+- When your browser connects to a website (https://example.com):
+
+The server sends its public key inside a digital certificate (SSL cert)
+
+Your browser uses the public key to encrypt a random "session key"
+
+Only the server with the private key can decrypt that session key
+
+Now both browser and server use the same session key for fast symmetric encryption
+
+- | Action                                 | Performed With                  |
+  | -------------------------------------- | ------------------------------- |
+  | Encrypt session key (browser → server) | **Public key**                  |
+  | Decrypt session key (server)           | **Private key**                 |
+  | Prove identity of server               | Private key (used to sign cert) |
+  | Verify certificate (browser)           | Public key (of CA)              |
+
+# How Browser Verifies
+
+Step 2: Browser Validates Certificate
+✅ 1. Is the certificate signed by a trusted Certificate Authority (CA)?
+The browser checks the digital signature on the certificate.
+
+It verifies that the certificate is signed by a CA whose public key is already stored in the browser’s Trusted Root CA store.
+
+Think of it like checking if a passport was issued by a real government.
+
+✅ 2. Is the certificate expired?
+The browser checks Not Before and Not After dates.
+
+If today’s date is outside that range → ❌ rejected
+
+✅ 3. Does the domain match?
+The browser checks if the domain name in the certificate matches the domain being visited.
+
+✅ 4. Is the certificate revoked?
+Some browsers or systems also check OCSP (Online Certificate Status Protocol) or CRLs (Certificate Revocation Lists).
+
+✅ 2. Types of SSL Certificates
+Let’s break this into validation level, coverage, and usage type:
+
+| Type   | Who Issues It          | What Is Verified            | Use Case                        |
+| ------ | ---------------------- | --------------------------- | ------------------------------- |
+| **DV** | Let's Encrypt, ZeroSSL | Only domain ownership       | Blogs, test apps, small sites   |
+| **OV** | DigiCert, GoDaddy      | Domain + Org existence      | Small business websites         |
+| **EV** | DigiCert, Sectigo      | Domain + Org + Legal entity | Banking, healthcare, government |
+
+B. Based on Coverage
+
+| Type                   | Example                                         | Description                         |
+| ---------------------- | ----------------------------------------------- | ----------------------------------- |
+| **Single Domain**      | `example.com`                                   | Secures one domain                  |
+| **Wildcard**           | `*.example.com`                                 | Secures all subdomains of a domain  |
+| **Multi-Domain / SAN** | `example.com`, `api.example.com`, `example.org` | Covers multiple domains in one cert |
+
+🔎 C. Based on Issuer
+
+| Type            | Description                                       |
+| --------------- | ------------------------------------------------- |
+| **Self-Signed** | You generate and sign it yourself (local testing) |
+| **CA-Signed**   | Issued and signed by a public CA (trusted)        |
+
+⚖️ Quick Comparison Table:
+
+| Cert Type   | Verified Info        | Cost        | Trusted by Browsers | Use Case                   |
+| ----------- | -------------------- | ----------- | ------------------- | -------------------------- |
+| DV          | Domain               | Free or Low | ✅ Yes              | Blogs, dev sites           |
+| OV          | Domain + Org         | Medium      | ✅ Yes              | Business sites             |
+| EV          | Domain + Org + Legal | High        | ✅ Yes              | Financial, medical, secure |
+| Self-Signed | Nothing              | Free        | ❌ No               | Internal testing/dev only  |
+
+## Create a SSL certificate
+
+- Launch an Instance
+- Install nginx/apache
+- Install openssl
+- Create the ssl certificate
+- Modify the nginx config file
+- make sure that these sertificates are in nginx's `/etc/nginx/ssl/` folder
+
+## What is cipher suite
+
+- When the browser and server have to communicate they first decide the Authentication, type of Encryption and Hashing and then Key Exchange. All the set of versiond or types is called cipher suite
+
+## Server certificate
+
+- It's the actual certificate issued for your website or API.
+
+- Contains your domain name, public key, expiration, etc.
+
+- Installed on your server/load balancer to enable HTTPS.
+
+## Certificate Chain
+
+### SSL/TLS Certificate Chain: Practical Lab
+
+- STAGE 1: Setup Folder Structure
+
+```t
+mkdir -p ~/certs/{root,intermediate,server}
+cd ~/certs
+```
+
+- STAGE 2: Create Your Own Root Certificate Authority
+
+- Step 1: Generate Private Key
+
+```t
+openssl genrsa -out root/rootCA.key 4096
+
+```
+
+- Step 2: Generate Root Certificate (self-signed)
+
+```t
+openssl req -x509 -new -nodes -key root/rootCA.key -sha256 -days 1024 -out root/rootCA.pem
+
+```
+
+- STAGE 3: Create Intermediate CA
+
+- Step 1: Generate Intermediate Private Key
+
+```t
+openssl genrsa -out intermediate/intermediateCA.key 4096
+
+```
+
+- Step 2: Create CSR for Intermediate
+
+```t
+openssl req -new -key intermediate/intermediateCA.key -out intermediate/intermediateCA.csr
+
+```
+
+- Step 3: Sign Intermediate CSR with Root CA
+
+```t
+openssl x509 -req -in intermediate/intermediateCA.csr \
+  -CA root/rootCA.pem -CAkey root/rootCA.key -CAcreateserial \
+  -out intermediate/intermediateCA.pem -days 500 -sha256
+
+```
+
+- STAGE 4: Create Server Certificate Signed by Intermediate CA
+
+- Step 1: Generate Server Private Key
+
+```t
+openssl genrsa -out server/server.key 2048
+
+```
+
+- Step 2: Create Server CSR
+
+```t
+openssl req -new -key server/server.key -out server/server.csr
+
+```
+
+- Step 3: Sign Server CSR with Intermediate CA
+
+```t
+openssl x509 -req -in server/server.csr \
+  -CA intermediate/intermediateCA.pem -CAkey intermediate/intermediateCA.key -CAcreateserial \
+  -out server/server.crt -days 365 -sha256
+
+```
+
+- STAGE 5: Create Full Chain
+
+- Create server/fullchain.pem file by combining:
+
+```t
+cat server/server.crt intermediate/intermediateCA.pem > server/fullchain.pem
+
+```
+
+- STAGE 6: Configure NGINX
+
+- Edit default config:
+
+```t
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate /home/ubuntu/cert/server/fullchain.pem;
+    ssl_certificate_key /home/ubuntu/cert/server/server.key;
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}
+
+
+```
+
+## SNI
+
+- SNI is an extension to the TLS (Transport Layer Security) protocol that allows a client to specify the hostname it's trying to reach at the start of the handshake.

@@ -135,7 +135,7 @@ for i in {1.100}; do echo $i; done
 - ls - only folders
 - ls -a // hidden folders also
 - ls -al // all along with permissions also
-- cd / completelu back
+- cd / completely back
 - cd .. just back by one step
 - touch <filename> to create file we can create multiple files at once
 - cat - to read file
@@ -270,7 +270,7 @@ for i in {1.100}; do echo $i; done
 
   # Cron Commands
 
-  - Frist Launch an instnace
+  - First Launch an instnace
   - Login into it
   - Go to etc/cron folder
   - To see the list of crons in crontab - " corntab -l "
