@@ -16,9 +16,10 @@
 
 - To create a local repository "git remote add origin url"
 - To push into repo use git push origin master
-- To create a new branch git branch newBranchName
-- To goTo some branch we use "git checkout Branch_Name"
-- To merge branch into main branch use "git merge branch_name"
+- To create a new branch `git branch newBranchName`
+- To goTo some branch we use "`git checkout Branch_Name`"
+- `git branch --list`
+- To merge branch into main branch use "`git merge branch_name`"
 - To clone a project "git clone project_git_url"
 - To fetch all the commits from the other main branch we use
 - git fetch --all --prune or git pull upstream main

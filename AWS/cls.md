@@ -30,7 +30,7 @@
     ---
 
     VPC: Virtual Private cloud.
-    In AWS or any other cloud services we for a region we have different availability zones.
+    In AWS or any other cloud services we have a region we have different availability zones.
     This is important because if we dont have more than 1 availability zone, when the server at single availability zone is down then the work will be off.
     So we should have multiple availability zones. And the clients in this Availability zones will communicate with each other within a region.
     But the problem here is if there are 2 clients in this availability zones. if one client in able to see the other clients data, as they communicate each other it will
@@ -1056,9 +1056,7 @@ If an object is accidentally deleted, you can often recover it using versioning 
 2. Amazon Elastic Block Storage (Permanent and paid)
 3. Amazon S3
 
-## SNS (Simple Notification Service)
-
-### SSH into Private Instance from Bastian Host
+## SSH into Private Instance from Bastian Host
 
 - Open Pagent and Click Add Key
 - Select ppk file
@@ -1069,32 +1067,40 @@ If an object is accidentally deleted, you can often recover it using versioning 
 ## Other ways to ssh into private instance
 
 - eval "$(ssh-agent -s)"
-- ssh-add <pemkey>
+- ssh-add -K <pemkey>
 - ssh -A ec2-user@<publicIP>
 - ssh ec2-user@<privateIP>
 
-### EBS Volume
+# EBS Volume
+
+- types of EBS Volumes
+
+- GP3 and GP2 - general Purpose one
+- IO2 and IO1 - Input and Output intense operations.
 
 1. create EC2 Instance
-2. Create a volume
+2. Create a volume on ebs section
 3. Attach Volume
 4. Verification: ---> lsblk ---> see disk partitions: fdisk -l ---> see filesystem: file -s <drive> ---> create file system: mkfs -t xfs <drive>
    ---> mount to folder: mount <drive> <folder>
 
    ```t
 
-   lsblk
-   sudo fdisk -l
-   sudo file -s <drive>
-   sudo mkfs -t xfs <drive>
+   lsblk : to block storages
+   sudo fdisk -l : to see files
+   sudo file -s <drive> : to see file system
+   sudo mkfs -t xfs <drive> <directory> : to see create file system
    df -h
    ls -lart
+
    ```
 
-5. Snapshot: ---> create EC2 ---> create snapshot for the first volume ---> create volume for the snapshot
-6. The file system in the 1st volume will replicate here but we have to mount it to a folder. And then use it.
+   Now create a file in thet folder you created and then
 
-### EFS (Elastic File System)
+5. Snapshot: ---> create EC2 ---> create snapshot for the first volume ---> create volume for the snapshot
+6. The file system in the 1st volume will replicate here but we have to mount it to a folder. Once done you will see the file that you created for the first instance in the 2nd instance.
+
+# EFS (Elastic File System)
 
 - serverless, highly scalable, durable and Available.
 - It will automatically grow and shrink as per requirement.
@@ -1109,7 +1115,7 @@ If an object is accidentally deleted, you can often recover it using versioning 
 - Connect to Instance
 - Lets host a website to see cross access
 - Install httpd.
-- Install amazon-efs-utils.
+- Install `amazon-efs-utils`.
 - Edit the Security Group and allow the NFS
 - Attach the volume to instance to the var/www/html folder
 - Create a index.html file
@@ -1117,7 +1123,7 @@ If an object is accidentally deleted, you can often recover it using versioning 
 - And mount to same folder
 - And try to access the file
 
-### Load Balancing
+## Load Balancing
 
 ## Scalability
 
@@ -1194,16 +1200,6 @@ If an object is accidentally deleted, you can often recover it using versioning 
 - ScaleIn: Dreasing the instances when you don't need them.
 - Desired Capacity: Allocate the minimum and the maximum number of instances that you intend to spin.
 - Auto Assign: Adding/decreasing instances to meet growing/ decreasing Demand.
-
-## AWS CloudWatch
-
-- AWS CloudWatch monitors your AWS resources and applications you run as AWS in real time.
-- Collect and tract metrics, which are variables you can measure for your resources and applications.
-- create alarams which watch metrics and send notifications.
-- Automatically make changes to resources you are monitoring when a threshold is breached.
-- You can monitor the CPU usage and disk reads and writes of your AWS Instances.
-- You can also use the above data to stop under-used isnatnces to save money.
-- can use custom metric as an Auto Scaling Policy.
 
 ### Diff B/W N/W LB Application LB and Classic LB
 
@@ -1413,6 +1409,20 @@ EOF
 
 DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Server(Gives IP).
 
+- Root Server
+
+- Gives the TLD for the domain (.com or .org)
+
+- TLD
+
+- By using the .com or .org the resolver queries the respective TLD if it is .com TLD it queries the .com TLD
+
+- Then the respective TLD will give the approprivate authoritaive server with the name server details.
+
+- Authoritative server
+
+- By using the name server provided by the TLD the authoritative server will provide the IP
+
 ## DNS Record
 
 - A DNS recors is a database record used to map a URL to an IP address. DNS records are stored in DNS servers and work to help users connect their websites to the outside world.
@@ -1443,11 +1453,9 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 - The parent health check will monitor upto 255 child health check.
 - If certain no.of health checks are healthy then the parent is considered as healthy.
 
-# Cloud watch alaram Health check
-
 ## Routing Policy
 
-# Simple Routing policy
+### Simple Routing policy
 
 - Use Case: When you have a single resource (like one web server) that performs a given function.
 
@@ -1455,19 +1463,19 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
 
 - No health checks involved.
 
-# Failover Routing Policy
+### Failover Routing Policy
 
 - Use Case: High availability setups (primary and secondary resources).
 
 - How It Works: Routes traffic to a primary resource unless it fails a health check, then traffic is routed to the secondary.
 
-# Geolocation Routing Policy
+### Geolocation Routing Policy
 
 - Use Case: Deliver content based on the user’s location (country, continent, or state).
 
 - How It Works: You define different endpoints for different geographic locations.
 
-# Geo Proximity Routing Policy (Traffic Flow Only)
+### Geo Proximity Routing Policy (Traffic Flow Only)
 
 - Use Case: Route traffic based on the geographic location of users and resources, and optionally, bias it.
 
@@ -1477,23 +1485,23 @@ DNS--->Root Server(tell TLD)--->TLD(gives Name Server Record)--->Autoritative Se
   - Positive Bias Distance: actual distance \* [1-(bias/100)]
   - Negatie Bias Distance : actual distance / [1+(bias/100)]
 
-# Latency Routing Policy
+### Latency Routing Policy
 
 - Use Case: Route traffic based on the lowest latency for the user.
 
 - How It Works: Directs requests to the AWS Region with the lowest latency (fastest response time).
 
-# IP Based Routing Policy
+### IP Based Routing Policy
 
 - By using IP based routing we can fine-tune our DNS routing by matching the Client IP with CIDR block ID of the source IP's and send the traffic to matched IP Address.
 
-# Multi-Value Answer Routing Policy
+### Multi-Value Answer Routing Policy
 
 - Use Case: Similar to simple routing but supports health checks and returns multiple IPs.
 
 - How It Works: Returns up to 8 healthy records randomly to increase availability and load distribution.
 
-# Weighted Routing Policy
+### Weighted Routing Policy
 
 - Use Case: Distribute traffic across multiple resources in proportions (for A/B testing or gradual traffic shifts).
 
@@ -1805,6 +1813,16 @@ body,
 headers,
 };
 };
+
+## AWS CloudWatch
+
+- AWS CloudWatch monitors your AWS resources and applications you run as AWS in real time.
+- Collect and tract metrics, which are variables you can measure for your resources and applications.
+- create alarams which watch metrics and send notifications.
+- Automatically make changes to resources you are monitoring when a threshold is breached.
+- You can monitor the CPU usage and disk reads and writes of your AWS Instances.
+- You can also use the above data to stop under-used isnatnces to save money.
+- can use custom metric as an Auto Scaling Policy.
 
 # AWS Cloud Watch
 
@@ -2625,7 +2643,338 @@ Let me know! 🚀
 
 - `https://faun.pub/what-is-amazon-ecs-and-ecr-how-does-they-work-with-an-example-4acbf9be8415`
 
-### SSL/TLS
+## ECS with Fargate + Managed Instances
+
+- here we have ec2 instance as laucnh type but they are managed by aws.
+- they are scaled and patched by aws
+- but for scaling we need the capacity_provider block
+- In the min step cound and max step count are imp which tell us how many instances to add based on spike.
+- and along with them the weight and base are imp where base mean how many tasks to run on first go itself ans weight comes in pic when there are multiple capacity provides i.e fargate and ec2 both are used at once.
+
+- In the capacity Provider block we can provide the required instance compatibilites
+
+## Diff b/w FARGATE & ECS MANAGED
+
+Excellent question! Here are the key features and capabilities that ECS Managed Instances provide that Fargate cannot:
+🚀 Hardware & Performance Capabilities
+
+1. GPU Support & Specialized Hardware
+   ECS Managed Instances:
+   Full GPU support with multiple instance families:
+   g4dn: NVIDIA T4 GPUs (machine learning inference, graphics)
+   g5, g5g: NVIDIA A10G GPUs (high-performance graphics and ML)
+   g6, g6e, g6f: Latest generation GPU instances
+   p3dn: NVIDIA V100 GPUs (deep learning training, HPC)
+   p4d: NVIDIA A100 GPUs (highest performance ML training)
+   p5: NVIDIA H100 GPUs (latest generation)
+   p6-b200: Next generation with NVIDIA B200 GPUs
+   Pre-installed NVIDIA drivers and CUDA toolkit
+   Fargate:
+   No GPU support - Limited to CPU-only workloads
+2. Instance Type Selection & Specialized Compute
+   ECS Managed Instances:
+   Access to full range of EC2 instance types (100+ instance types)
+   Specialized instance families:
+   High-performance computing (HPC) instances
+   Memory-optimized instances (up to several TB of RAM)
+   Storage-optimized instances
+   Network-optimized instances
+   Burstable performance instances
+   Attribute-based selection with 20+ attributes (CPU architecture, network performance, etc.)
+   Fargate:
+   Limited to predefined configurations
+   Maximum limits: 16 vCPUs, 120 GiB memory
+   No specialized hardware access
+   🔧 Advanced System Capabilities
+3. Privileged Containers & Linux Capabilities
+   ECS Managed Instances:
+   Full privileged container support
+   Advanced Linux capabilities:
+   CAP_NET_ADMIN (network administration)
+   CAP_SYS_ADMIN (system administration)
+   CAP_BPF (eBPF programs)
+   Docker-in-Docker support
+   System-level monitoring tools (eBPF-based solutions)
+   Fargate:
+   No privileged containers
+   Limited Linux capabilities (only CAP_SYS_PTRACE supported)
+   Cannot run Docker-in-Docker
+   Restricted system access
+   💰 Cost Optimization Features
+4. Resource Utilization & Multi-tenancy
+   ECS Managed Instances:
+   Multi-task placement - Multiple tasks share the same instance
+   Better resource utilization - Pack more workloads per dollar
+   Shared infrastructure components
+   Reserved Instance support for predictable workloads
+   Spot Instance integration
+   Fargate:
+   1:1 task-to-infrastructure ratio - Each task gets dedicated resources
+   Higher per-task overhead
+   Limited cost optimization options
+   🏗️ Infrastructure Control
+5. Capacity Reservations & Predictable Performance
+   ECS Managed Instances:
+   EC2 Capacity Reservations support
+   Predictable performance with specific instance types
+   Consistent hardware across tasks
+   Instance storage access
+   Fargate:
+   No capacity reservations
+   Variable performance depending on underlying hardware
+   No control over instance placement
+6. Advanced Networking & Storage
+   ECS Managed Instances:
+   Enhanced networking features
+   Instance storage access (NVMe SSD, etc.)
+   Custom network configurations
+   Advanced storage options
+   Fargate:
+   Limited networking options
+   No instance storage access
+   Standard networking only
+   🔍 Monitoring & Observability
+7. Advanced Monitoring Capabilities
+   ECS Managed Instances:
+   System-level monitoring with privileged access
+   eBPF-based monitoring solutions
+   Custom monitoring agents with system access
+   Performance profiling tools
+   Fargate:
+   Container-level monitoring only
+   Limited system visibility
+   No privileged monitoring tools
+   📊 When to Choose ECS Managed Instances Over Fargate:
+   Choose ECS Managed Instances when you need:
+   GPU acceleration for ML/AI workloads
+   High-performance computing applications
+   Specialized hardware requirements
+   Privileged containers or system-level access
+   Cost optimization through resource sharing
+   Predictable performance with capacity reservations
+   Advanced monitoring and observability tools
+   Docker-in-Docker or container orchestration tools
+   Large memory requirements (>120 GiB)
+   High CPU requirements (>16 vCPUs)
+   Fargate is still better for:
+   Simple, stateless applications
+   Variable or unpredictable workloads
+   Quick prototyping and development
+   Minimal operational overhead
+   Applications that don't need specialized hardware
+   The key insight is that ECS Managed Instances give you the full power of EC2 with the operational simplicity of a managed service, while Fargate prioritizes simplicity and serverless operations at the cost of flexibility and specialized capabilities.
+   Sources
+
+## Diff b/w EC2 and FARGATE launch types indepth
+
+Excellent 👏 — this is one of the **most important and misunderstood topics in AWS ECS**, especially when you start moving from basic deployments to real-world production setups.
+
+Let’s break this down in a **real-world, DevOps-focused way**, covering all aspects — **networking, scaling, cost, performance, and operations** — with clear **examples** for each.
+
+---
+
+# 🚀 ECS Launch Types — Fargate vs EC2 (Managed)
+
+ECS can run your containers in **two major modes**:
+
+| Launch Type            | Who Manages the Infrastructure?                           |
+| ---------------------- | --------------------------------------------------------- |
+| **Fargate (Managed)**  | AWS manages the servers (you just define CPU/memory/task) |
+| **EC2 (Self-Managed)** | You manage the EC2 instances that run the containers      |
+
+---
+
+## 🧱 1. INFRASTRUCTURE MANAGEMENT
+
+| Aspect                  | **Fargate (Managed)**                            | **EC2 (Launch Type)**                                                 |
+| ----------------------- | ------------------------------------------------ | --------------------------------------------------------------------- |
+| Who provisions compute? | AWS — you don’t touch servers                    | You provision EC2 instances (via Auto Scaling Group)                  |
+| OS patching             | Done by AWS automatically                        | You must patch & maintain AMIs                                        |
+| Scaling                 | You scale tasks, AWS automatically adds capacity | You scale both EC2 instances _and_ tasks manually or via Auto Scaling |
+| Control                 | Limited (no SSH, no daemon access)               | Full control (you can SSH into EC2)                                   |
+
+**Example:**
+
+- In **Fargate**, you simply say:
+  “Run 5 tasks, each 512 CPU & 1024 MB” — AWS provisions exactly what’s needed.
+- In **EC2**, you must ensure your EC2 Auto Scaling Group has enough capacity to host those 5 tasks.
+
+---
+
+## 🌐 2. NETWORK MANAGEMENT
+
+### **Fargate (awsvpc mode required)**
+
+- Each task **gets its own ENI (Elastic Network Interface)** in your VPC.
+- That means:
+
+  - Each container has its own private IP address.
+  - It behaves like a small EC2 instance inside your subnet.
+
+- You attach **security groups directly to the task**, not the instance.
+- Simpler isolation — AWS manages the networking layer.
+
+**Example:**
+If you deploy 10 backend containers in a private subnet, AWS will create 10 ENIs — each with a private IP.
+These ENIs connect directly to your NAT Gateway for outbound Internet.
+
+---
+
+### **EC2 Launch Type**
+
+- Multiple containers share the same ENI (the EC2 instance’s network interface).
+- Containers communicate through Docker bridge networking.
+- Security groups apply to the EC2 instance, not directly to each container.
+- More flexibility but more complexity.
+
+**Example:**
+If your EC2 has IP `10.0.1.12`, and you run 5 containers, all of them share that same IP — only different internal ports.
+
+---
+
+✅ **Network Summary**
+
+| Feature                          | **Fargate**   | **EC2**                          |
+| -------------------------------- | ------------- | -------------------------------- |
+| Network Mode                     | `awsvpc` only | `bridge`, `host`, `awsvpc`       |
+| ENI per Task                     | Yes           | No (shared per EC2)              |
+| Security Group                   | Task-level    | Instance-level                   |
+| IP per Task                      | Unique        | Shared                           |
+| Internet Access (Private Subnet) | NAT Gateway   | NAT Gateway via instance routing |
+
+---
+
+## ⚙️ 3. DEPLOYMENT & OPERATIONS
+
+| Feature          | **Fargate**                            | **EC2**                               |
+| ---------------- | -------------------------------------- | ------------------------------------- |
+| Start time       | Slower (needs to provision task infra) | Faster (instances already running)    |
+| Access logs      | Through CloudWatch only                | You can SSH, view Docker logs locally |
+| Custom agents    | Not possible                           | Possible (you control the host)       |
+| Spot instances   | Not supported                          | Fully supported                       |
+| Daemon processes | Not supported                          | Supported using “Daemon” scheduling   |
+
+**Example:**
+
+- In Fargate: You **can’t run Datadog agents** or **sidecar logging daemons** easily — you rely on ECS logging drivers.
+- In EC2: You can install extra agents, tweak Docker settings, etc.
+
+---
+
+## 💰 4. COST MODEL
+
+| Factor         | **Fargate**                       | **EC2**                                |
+| -------------- | --------------------------------- | -------------------------------------- |
+| Billing        | Pay per vCPU-second & GB-second   | Pay for entire EC2 instance uptime     |
+| Idle cost      | None — no running tasks → no cost | You pay even if containers are idle    |
+| Discounts      | Savings Plan, Spot not available  | EC2 Spot, Reserved Instances supported |
+| Predictability | Simple (pay per task)             | Complex (instance mix, scaling needed) |
+
+**Example:**
+
+- 10 tasks running 24x7 → cheaper in EC2.
+- Bursty workloads (e.g. jobs triggered on demand) → cheaper in Fargate.
+
+---
+
+## 🔒 5. SECURITY & ISOLATION
+
+| Aspect            | **Fargate**                 | **EC2**                               |
+| ----------------- | --------------------------- | ------------------------------------- |
+| Host isolation    | AWS fully isolates          | You share kernel between containers   |
+| Security boundary | Per task                    | Per instance                          |
+| SSH               | Not allowed                 | Allowed                               |
+| File access       | Task ephemeral storage only | Full control over host EBS/EFS mounts |
+
+**Example:**
+Fargate tasks are sandboxed by AWS Firecracker microVMs — you can’t escape the container boundary.
+EC2 tasks share the host kernel — you must harden your AMI.
+
+---
+
+## 📈 6. SCALING BEHAVIOR
+
+| Scaling              | **Fargate**                       | **EC2**                             |
+| -------------------- | --------------------------------- | ----------------------------------- |
+| Horizontal           | Increase task count easily        | Must ensure enough EC2 capacity     |
+| Vertical             | Change task CPU/memory definition | Resize EC2 instances manually       |
+| Auto Scaling trigger | CloudWatch metrics                | CloudWatch + EC2 Auto Scaling Group |
+
+**Example:**
+If traffic spikes:
+
+- Fargate → Just increase `desired_count = 10` → AWS handles capacity.
+- EC2 → ECS may fail to place tasks if EC2 instances are full — you must scale your ASG.
+
+---
+
+## ☁️ 7. INTEGRATION WITH NETWORKING COMPONENTS
+
+| Resource           | **Fargate**                                       | **EC2**                          |
+| ------------------ | ------------------------------------------------- | -------------------------------- |
+| ALB / NLB          | Works natively (via awsvpc)                       | Works, but needs port mapping    |
+| VPC Private Subnet | Supported                                         | Supported                        |
+| NAT Gateway        | Required for private tasks needing Internet       | Same (for private instances)     |
+| EFS Mounts         | Supported (via volume definitions)                | Supported                        |
+| ENI Limits         | Each task consumes one ENI → subnet limit matters | Shared ENI, less ENI consumption |
+
+**Example:**
+If your private subnet allows 200 ENIs, and you run 200 Fargate tasks — you’ll hit the subnet ENI limit.
+In EC2 mode, hundreds of containers share one ENI per instance.
+
+---
+
+## 🧩 8. WHEN TO USE WHICH (Real-World Scenarios)
+
+| Use Case                                         | Recommended Launch Type | Reason                              |
+| ------------------------------------------------ | ----------------------- | ----------------------------------- |
+| Simple API backend (like your employee app)      | **Fargate**             | Easy management, no EC2 to maintain |
+| Predictable, long-running workloads              | **EC2**                 | Cheaper at scale                    |
+| Batch processing / event-driven                  | **Fargate**             | Pay only per job                    |
+| Complex networking (e.g. service mesh, sidecars) | **EC2**                 | Full control                        |
+| Security-sensitive apps                          | **Fargate**             | Stronger isolation                  |
+| Heavy network throughput or GPU workloads        | **EC2**                 | Hardware control & optimization     |
+
+---
+
+## 🧠 Example Diagram Summary
+
+```
+FARGATE (Managed)
+-----------------
+[Task-1] → ENI → Private Subnet → NAT Gateway → Internet
+[Task-2] → ENI → Private Subnet → NAT Gateway → Internet
+
+EC2 (Self-Managed)
+-----------------
+[EC2 Instance ENI] → Private Subnet → NAT Gateway → Internet
+ ├── [Container-1 :3000]
+ ├── [Container-2 :3001]
+ └── [Container-3 :3002]
+```
+
+---
+
+## 🏁 TL;DR Summary
+
+| Category       | Fargate        | EC2                        |
+| -------------- | -------------- | -------------------------- |
+| Infrastructure | Fully managed  | You manage EC2             |
+| Network Mode   | `awsvpc` only  | Multiple modes             |
+| Scaling        | Simpler        | More manual                |
+| Cost           | Pay-per-task   | Pay-per-instance           |
+| Control        | Low            | High                       |
+| Isolation      | Strong         | Moderate                   |
+| Speed          | Slower startup | Faster once EC2s are ready |
+
+---
+
+Would you like me to show a **Terraform comparison** between:
+
+- One ECS Service on **Fargate**
+- The same service running on **EC2**
+
+so you can visually see the infrastructure difference (VPC, task definition, ALB, networking)?
 
 - SSL (Secure Sockets Layer) and its successor TLS (Transport Layer Security) are cryptographic protocols that secure communication over a network — especially the Internet.
 
@@ -2838,3 +3187,125 @@ server {
 ## SNI
 
 - SNI is an extension to the TLS (Transport Layer Security) protocol that allows a client to specify the hostname it's trying to reach at the start of the handshake.
+
+# AWS KINESIS
+
+- AWS Kinesis is a massively scalable, real-time data streaming service.
+
+- It is used to collect, process, and analyze real-time data streams such as:
+
+- Log streams
+
+- Clickstream data
+
+- IoT sensor data
+
+- Application events
+
+- Video streams
+
+- Security events
+
+- Financial transactions
+
+- Think of it as AWS’s version of Apache Kafka, but serverless and fully managed.
+
+## Componentrs of Kinesis
+
+### Kinesis Data Streams (KDS)
+
+Real-time, low-latency streaming service like Kafka.
+
+Use Cases:
+
+Real-time log processing (ECS, EC2, web apps)
+
+Clickstream analysis
+
+Fraud detection systems
+
+Gaming leaderboards
+
+Stock market applications
+
+Features:
+
+Millisecond latency
+
+Order guaranteed within a shard
+
+Retention: 24 hours to 1 year
+
+Consumers: Lambda, KCL apps, Firehose, custom apps
+
+Replayable (you can reprocess data)
+
+### Kinesis Data Firehose (Serverless & No Ops)
+
+Fully managed pipeline that automatically delivers data to:
+
+S3
+
+Redshift
+
+OpenSearch
+
+Splunk
+
+Datadog
+
+New Relic
+
+Use Cases:
+
+Log delivery EC2 → Firehose → S3
+
+App logs → Firehose → OpenSearch (ELK)
+
+Custom events → Firehose → Splunk
+
+Security logs → Firehose → S3 (Data Lake)
+
+Features:
+
+No management
+
+Auto scaling
+
+No shards or consumers
+
+Batching + compression + transformation
+
+Good for streaming → storage targets
+
+### Kinesis Data Analytics
+
+Runs SQL queries on streaming data.
+
+Use Cases:
+
+Detect anomalies in a stream
+
+Real-time dashboards
+
+Detect unusual events
+
+Calculate rolling averages
+
+Transform event streams before putting into S3
+
+### Kinesis Video Streams
+
+Used for streaming live video or camera feeds.
+
+Use Cases:
+
+CCTV monitoring
+
+Live IoT cameras
+
+Medical video streams
+
+Drone video feeds
+
+ML video processing (Rekognition)

@@ -1,28 +1,43 @@
+# Linux
+
+## File System Hirachy
+
+- / (root) top level directory
+- /home - user home directory
+- /etc - system level configurations
+- /var - variable data like logs and databases
+- /usr - user related data and programs
+- /tmp - Temporary files which will be cleared on reboot
+- /bin - essential system binaries
+- /opt - optional files/ third party softwares
+
 ## Basic
 
-- pwd : Present working directory
-- ls to see the list of files
-- touch to create a file
-- cat or open to open a file
-- vi to write in file
-- cp file_Name new_copy_file_name -- To create copy of a file
-- mv file_nme destination_name -- To move file
-- mv file_name new_file_name -- To rename file
-- To rename multiple files we use " rename 's/\.txt$/\.bak/' \*.txt" cmd.
-- rm file_name -- to remove file
-- df -- disk information
-- find --To find the file or directory. "find /home/xyz <filename>"
-- grep to find a pattern or some text in a file.
-- find . -prem 777 - to find files that have(read, write and execute) permissions
+- `pwd` : Present working directory
+- `ls` to see the list of files
+- `mkdir -p <nestedFolder>`
+- `touch` to create a file
+- `cat` or open to open a file
+- `vi` to write in file
+- `cp` file_Name new_copy_file_name -- To create copy of a file
+- `cp -r <directory> <otherDirectory>` -- To copy files from one dir to other dir
+- `mv file_nme destination_name` -- To move file
+- `mv file_name new_file_name` -- To rename file
+- To rename multiple files we use " rename `s/\.txt$/\.bak/' \*.txt` " cmd.
+- `rm file_name` -- to remove file
+- `df` -- disk information
+- `find` --To find the file or directory. "find /home/xyz <filename>"
+- `grep` to find a pattern or some text in a file.
+- `find . -prem 777` - to find files that have(read, write and execute) permissions
 
-- ps -ef to see the processes that are running
-- ps -ef | grep "process name" to find process by name
+- `ps -ef` to see the processes that are running
+- `ps -ef | grep "process name"` to find process by name
 
 - ps -ef | grep "process name" | awk F " " '{print $2}'
 - curl to retrive the information from internet // similar to postman
 - less file.txt helps to view large files one page at a time.
 
-## ZIP ABD UNZIP
+## ZIP AND UNZIP
 
 - mkdir myfolder
 - unzip myfile.zip -d myfolder
@@ -150,6 +165,8 @@ for i in {1.100}; do echo $i; done
 - chown <username> <filename> - to change owner of a file.
 - we can use 'top' or "ps aux" to see the running process
 - `stat <file>` - Show detailed file information.
+
+- `iostat` used to monitor the cpu and disk I/O performance.
 
 - Kill a Process - "ps aux | grep process_name", "kill <PID>" or "pkill <process_name>"
 
@@ -286,6 +303,11 @@ for i in {1.100}; do echo $i; done
 - "id" to get your id, group id, groups id.
 - To see all the users we use - "cat /etc/passwd"
 - "who" - shows all logged in users
+- sudo su - --> Changes to root user && root user home directory
+- sudo su --> just changes to root user but past directory
+- sudo -i --> recomented to use to change to root user because more secure and easy to audit
+- To change hostname use `hostnamectl set-hostname <hostname_new>`
+- Can verify that in /etc/hostname file
 
 # Creating a user?
 
@@ -316,7 +338,7 @@ for i in {1.100}; do echo $i; done
 
 ## Linux Troubleshooting
 
-# Ping (Packet Interbet Grouper)
+# Ping (Packet Internet Grouper)
 
 - CHECK IF HOST IS REACHABLE
 - we can ping from one server to other server using- " ping <ipaddress-of-2nd-server> "
@@ -347,6 +369,7 @@ for i in {1.100}; do echo $i; done
 # Route
 
 - We can see the active routes by using "route -n"
+- Gives Route Table
 
 # host
 
@@ -369,6 +392,7 @@ for i in {1.100}; do echo $i; done
 # Traceroute
 
 - Basically checks from the traffic goes to where
+- traceroute shows each hop (router or gateway) your data passes through before reaching its final destination — helping you identify network delays or connection problems.
 
 # Top
 
