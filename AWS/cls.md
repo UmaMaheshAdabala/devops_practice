@@ -252,7 +252,7 @@ Real-World Analogy
 
 A Gateway Endpoint is like a private road connecting two buildings in the same campus, without needing to exit the main entrance.
 
-3. VPC Interface Endpoints
+3. VPC Interface
 
 Definition: A private connection to AWS services using an Elastic Network Interface (ENI) inside your VPC.
 
@@ -283,7 +283,6 @@ A VPC Interface Endpoint is like a dedicated phone line inside a company. You ca
 # 2 Types of VPN
 
 - Static VPN
-
   - Uses static routing where routes are manually configured.
 
   - The customer gateway device (on-premises router) must have predefined routes to AWS.
@@ -295,7 +294,6 @@ A VPC Interface Endpoint is like a dedicated phone line inside a company. You ca
   - Requires manual updates if the network topology changes.
 
 - Dynamic VPN
-
   - Uses dynamic routing via BGP (Border Gateway Protocol).
 
   - Routes are automatically exchanged between AWS and the customer gateway.
@@ -307,7 +305,6 @@ A VPC Interface Endpoint is like a dedicated phone line inside a company. You ca
   - More scalable and reduces manual configuration effort.
 
 - BGP:
-
   - Border Gateway Protocol (BGP) is a dynamic routing protocol used to exchange routing information between different networks, particularly across the internet or within large enterprise networks. It helps routers determine the best path for data to travel between different networks.
 
   - BGP is used in AWS Site-to-Site VPN (Dynamic VPN) to automate the exchange of routes between AWS and an on-premises network.
@@ -391,7 +388,6 @@ aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
 - Automatically updated by AWS
 - Provide a way to quick assign necessary permissions
 - Types
-
   1. AWS Managed (General Use)
   2. Service-linked policies
 
@@ -435,15 +431,10 @@ aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
 - You can use roles to delegate access to users, applications, or services that don't normally have access to your AWS resources
 
 - USECASES:
-
   1. AWS Service
-
   - There are so many services in AWS but one cannot access other so for that we use IAM Roles to provide access when ever required.
-
   2. AWS Account | Assume Role
-
   - Same account: A User x wants a temporary access to s3 service
-
     - First create User
     - Then create a role
     - Go to role and edit trust policies and add IAM user-name there
@@ -480,7 +471,6 @@ aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
     ```
 
   ## Cross Account Access (IAM --> EC2)
-
   1. Create a role in account B and give ec2 full access to it on the name of Account A ID.
   2. create a role in account A and select lambda as service and attach STS:AssumeRole policy on the name of role created in Account B
   3. Attach the role to lambda fn.
@@ -1191,7 +1181,7 @@ If an object is accidentally deleted, you can often recover it using versioning 
 
 - SSL/TLS Certificated encrypt data sent over internet. They help trust and identify website.
 
-## Auto Scaling Groups
+# Auto Scaling Groups
 
 - An AUto Scaling Group contains of AMaxon EC2 instance that are treated as logical grouping for the purposees of automatic scaling and management.
 - When your application load increses or decreases, we use AutoScaling groups to make out life easier by adding or decreasing the resources as per our need.
@@ -1856,7 +1846,6 @@ headers,
 - AWS CloudTrail is a service that enables governance, compliance, and operational and risk auditing of your AWS account. It records all API calls made within your AWS environment, including actions taken through the AWS Management Console, AWS SDKs, command-line tools, and other AWS services.
 
 - CloudTrail captures event history of your AWS account activities.
-
   - It logs information such as:
 
   - Who made the request (IAM user, role, or service).
@@ -2807,7 +2796,6 @@ ECS can run your containers in **two major modes**:
 
 - Each task **gets its own ENI (Elastic Network Interface)** in your VPC.
 - That means:
-
   - Each container has its own private IP address.
   - It behaves like a small EC2 instance inside your subnet.
 
