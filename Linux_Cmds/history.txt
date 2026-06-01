@@ -1,0 +1,289 @@
+1  clear
+    2  /etc/cron/crontab-l
+    3  cd /etc/
+    4  ls
+    5  ls | gerp cr
+    6  ls | grep cr
+    7  cd crontab
+    8  crontab -e
+    9  cat /etc/crontab
+   10  cat /etc/motd
+   11  find /etc/ -name motd
+   12  ls
+   13  ls | grep -i m
+   14  cat motd
+   15  vi motd
+   16  clear
+   17  cd /etc/cron
+   18  cat /etc/crontab 
+   19  /etc/crontab -e
+   20  sudo /etc/crontab -e
+   21  sudo su -
+   22  sudo yum install cronie -y
+   23  crontab -l
+   24  crontab -l -u ec2-user
+   25  sudo crontab -l -u ec2-user
+   26  sudo crontab -l -u root
+   27  crontab -e
+   28  cd /tmp
+   29  ls
+   30  crontab -e
+   31  find /tmp -name testfile
+   32  sudo find /tmp -name testfile
+   33  clear
+   34  crontab -e
+   35  ls
+   36  touch testfile
+   37  ls
+   38  cat testfile 
+   39  crontab -e
+   40  sudo systemctl enable crond
+   41  sudo systemctl start crond
+   42  sudo rm testfile 
+   43  ls
+   44  cat testfile 
+   45  sudo su -
+   46  ls
+   47  cd /tmp
+   48  ls
+   49  cat roottestfile 
+   50  ll
+   51  sudo crontab -l -u root
+   52  crontab -l 
+   53  crontab -l -u ec2-user -r
+   54  sudo crontab -l -u ec2-user -r
+   55  sudo crontab -u ec2-user -r
+   56  sudo crontab -l -u ec2-user
+   57  cd ..
+   58  whoami
+   59  groups
+   60  id
+   61  cat /etc/passwd
+   62  cat /etc/group
+   63  clear
+   64  cat /etc/group
+   65  cat /etc/passwd
+   66  clear
+   67  sudo useradd mahesh
+   68  sudo cat etc/passwd
+   69  sudo cat /etc/passwd | grep mahesh
+   70  sudo groupadd myGroup
+   71  sudo cat /etc/group | grep my
+   72  groups
+   73  usermod -aG myGroup mahesh
+   74  sudo usermod -aG myGroup mahesh
+   75  sudo cat /etc/passwd | grep mahesh
+   76  sudo /etc/group | grep myG
+   77  sudo cat /etc/group | grep myG
+   78  groups mahesh
+   79  groups ec2-user
+   80  groups root
+   81  visudo
+   82  sudo visudo
+   83  clear 
+   84  history
+   85  history > /tmp/history.txt
+   86  cd /tmp
+   87  ls
+   88  cat history.txt 
+   89  cd /etc
+   90  ls
+   91  cd ssh
+   92  ls
+   93  cat sshd_config
+   94  sudo cat sshd_config
+   95  sudo vi sshd_config
+   96  sudo passwd mahesh
+   97  su - mahesh
+   98  sudo usermod -aG wheel mahesh
+   99  su - mahesh
+  100  history > /tmp/history.txt
+  101  cat /tmp/history.txt 
+  102  sudo yum install nginx -y
+  103  sudo systemctl start nginx
+  104  sudo systemctl enable nginx
+  105  history
+  106  clear
+  107  ping google.com
+  108  ping -c 5 google.com
+  109  ping -q -c 5 google.com
+  110  telnet 8.8.8.8 80
+  111  sudo yum install telnet -y
+  112  telnet 8.8.8.8 80
+  113  telnet google.com 80
+  114  sudo cat /etc/hosts
+  115  clear
+  116  echo $TMOUT
+  117  sudo echo $TMOUT
+  118  history
+  119  ifconfig
+  120  telnet google.com
+  121  telnet 8.8.8.8 80
+  122  telnet google.com 80
+  123  ping google.com -c 5
+  124  ping -q -c 5 google.com
+  125  netstat -tulnp | grep 22
+  126  netstat -tulnp | grep 80
+  127  sudo systemctl start nginx
+  128  sudo systemctl enable nginx
+  129  netstat -tulnp | grep 80
+  130  sudo netstat -tulnp | grep 80
+  131  history > /tmp/histhistory > /tmp/history.txt 
+  132  nslookup google.coom
+  133  nslookup google.com
+  134  nslookup 172.21.29.15
+  135  route -n
+  136  host www.gmail.com
+  137  host www.amazon.in
+  138  history
+  139  history > /tmp/history.txt 
+  140  cat history.txt
+  141  cat /tmp/history.txt 
+  142  clear
+  143  ifconfig
+  144  netstat
+  145  netstat -a | grep 22
+  146  netstat -tulnp
+  147  history
+  148  ping google.com
+  149  ping -c 5 google.com
+  150  ping -q -c 5 google.com
+  151  telnet google.com 80
+  152  netstat -a | grep 80
+  153  netstat -a |grep 20
+  154  netstat -a |grep 22
+  155  netstat -tulnp | grep 22
+  156  nginx -v
+  157  sudo systemctl status nginx
+  158  netstat -tulnp | grep 80
+  159  sudo netstat -tulnp | grep 80
+  160  sudo systemctl stop nginx
+  161  sudo netstat -tulnp | grep 80
+  162  nslookup 172.31.29.15
+  163  nslookup google.com
+  164  curl www.google.com
+  165  curl -SL www.google.com
+  166  dig www.google.com
+  167  dig facebook.com
+  168  nslookup facebook.com
+  169  dig www.facebook.com
+  170  host facebook.com
+  171  history
+  172  man traceroute
+  173  traceroute google.com
+  174  top
+  175  top | grep 35
+  176  history > /tmp/history.txt 
+  177  cat /tmp/history.txt 
+  178  cd /etc/cron
+  179  cd /etc
+  180  ls
+  181  cd cron.d
+  182  ls
+  183  crontab -e
+  184  cd ../..
+  185  crontab -e
+  186  crontab -l
+  187  crontab -l -u root
+  188  sudo crontab -l -u root
+  189  sudo su -
+  190  sudo cat /etc/ssh/sshd_config | grep ^Port
+  191  sudo cat /etc/ssh/sshd_confi
+  192  sudo cat /etc/ssh/sshd_config
+  193  useradd vishal
+  194  sudo useradd vishal
+  195  passwd vishal
+  196  sudo passwd vishal
+  197  cd /etc/
+  198  cd .ssh
+  199  ll
+  200  cd ssh
+  201  ls
+  202  cat ssh_config.d
+  203  cd ssh.config.d
+  204  cd ssh_config.d
+  205  ls
+  206  cd ..
+  207  sudocd .ssg/
+  208  sudocd .ssh/
+  209  sudo cd .ssh/
+  210  ll
+  211  ls -a
+  212  ~/.ssh/authorized_keys
+  213  sudo ~/.ssh/authorized_keys
+  214  pwd
+  215  find / -name authorized_keys
+  216  sudo find / -name authorized_keys
+  217  sudo cat /home/ec2-user/.ssh/authorized_keys
+  218  s
+  219  ls
+  220  cat /etc/passwd
+  221  sudo groupadd devs
+  222  sudo useradd d1
+  223  sudo useradd d2
+  224  sudo useradd d3
+  225  sudo useradd l1
+  226  sudo usermod -aG devs d1
+  227  sudo usermod -aG devs d2
+  228  sudo usermod -aG devs d3
+  229  sudo usermod -aG devs l1
+  230  sudo cat /etc/passwd
+  231  sudo cat /etc/groups
+  232  sudo cat /etc/group
+  233  mkdir folder1
+  234  sudo mkdir folder1
+  235  ls
+  236  ls /
+  237  cd ~
+  238  ls
+  239  ls /
+  240  mkdir devsFolder
+  241  ll 
+  242  sudo chmod :devs devsFolder/
+  243  sudo chown :devs devsFolder/
+  244  ll 
+  245  passwd d1
+  246  sudo passwd d1
+  247  su - d1
+  248  sudo usermod -aG wheel d1
+  249  su - d1
+  250  ls
+  251  ll devsFolder/
+  252  ls -al devsFolder/
+  253  ls -al devsFolder
+  254  mkdir /projects
+  255  sudo mkdir /projects
+  256  ls /
+  257  cd /projects/
+  258  mkdir devsFolder
+  259  sudo mkdir devsFolder
+  260  ls -al devsFolder
+  261  ls -al
+  262  sudo chown :devs devsFolder
+  263  ls -al
+  264  su - d1
+  265  cd ..
+  266  sudo ls -al 
+  267  sudo /projects
+  268  sudo cd /projects
+  269  pwd
+  270  su - d1
+  271  ls -al /projects
+  272  sudo setfacl -m u:l1:rwx /projects/devsFolder
+  273  ls -al /projects
+  274  sudo getfacl /projects/devsFolder
+  275  sudo passwd l1
+  276  su - l1
+  277  ip addr
+  278  tcpdump
+  279  telnet google.com:80
+  280  telnet google.com 80
+  281  telnet google.com 89087
+  282  telnet google.com 
+  283  host google.com
+  284  nslookup google.com
+  285  dig google.com
+  286  traceroute google.com
+  287  ip addr
+  288  ifconfig
+  289  history

@@ -68,6 +68,7 @@
 `find /var -type f`
 `find . -size +100M`
 `find . -mtime -1`
+`find / -name file exec command {} \;` to execute command on all the result files
 
 7. Grep
 
@@ -394,3 +395,59 @@ Process management is crucial for system performance and stability. By using too
 `/proc/meminfo`
 `/proc/cpuinfo`
 `/proc/diskstats`
+
+# Host Name
+
+- set Host name: `hostnamectl set-hostname <name>`
+
+# Network Connections
+
+- `nmtui`
+
+# Shell Script
+
+- Read user iinput - `read <varname>`
+- arfuments - `./<fileName> arg1 arg2..`
+- Use then as $1 for arg1 and $2 for arg2
+
+- Condition Statements
+
+```
+if [ condition ]
+then
+  Statement
+elif [ condition ]
+then
+  Sstement
+else
+then
+  Statement
+fi
+
+```
+
+- Loops
+
+```
+for(i in <variable>)
+do
+  Statement
+done
+
+or
+
+for((i-0;i<n;i++>))
+do
+  Ststement
+done
+
+```
+
+```
+
+while [ condition ]
+do
+  Ststement
+done
+
+```

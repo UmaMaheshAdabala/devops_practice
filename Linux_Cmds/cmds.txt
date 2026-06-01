@@ -1,0 +1,65 @@
+1 ls
+2 ls -a
+3 ll
+4 cd
+5 cd /etc
+6 cd ..
+7 cd ~
+8 pwd
+9 ifconfig
+10 mkdir vishal
+11 cd vishal
+12 touch file.txt
+13 nano file.txt
+14 cat file.txt
+15 vi file.txt
+16 rm file.txt
+17 cd ..
+18 rm -f vishal
+19 mkdir -p vishal/folder1/folder2
+20 rm -f vishal
+21 touch file1.txt
+22 nano file1.txt
+23 cp file1.txt file2.txt
+24 cd ..
+25 mkdir folder3
+26 cp -r folder2/ folder3/
+27 cd folder3
+28 cat file1.txt
+29 cd folder2
+30 grep hello file1.txt
+31 df -h
+32 find / -name file1.txt
+33 whoami
+34 sudo su -
+35 lsblk
+36 fdisk /dev/nvme2n1
+37 mkfs.ext4 /dev/nvme2n1p1
+38 mkfs.ext4 /dev/nvme2n1p2
+39 mkfs.ext4 /dev/nvme2n1p3
+40 mkdir folder1 folder2 folder3
+41 ls
+42 mount /dev/nvme2n1p1 /folder1
+43 mount /dev/nvme2n1p2 /folder2
+44 mount /dev/nvme2n1p3 /folder3
+45 cd folder1
+46 touch file1
+47 cp file1 ../folder2
+48 nano /etc/fstab
+49 lvmdiskscan
+50 pvcreate /dev/nvme1n1
+51 pvcreate /dev/nvme2n1
+52 pvcreate /dev/nvme1n1
+53 vgcreate aws_vol /dev/nvme1n1 /dev/nvme2n1
+54 vgdisplay
+55 lvcreate -L 2G -n logical_vol aws_vol
+55 lvcreate -L 8G -n logical_vol2 aws_vol
+56 mkfs.ext4 /dev/aws_vol/logical_vol
+57 mkfs.ext4 /dev/aws_vol/logical_vol2
+58 mkdir /awslvm01
+59 mkdir /awslvm02
+60 mount /dev/aws_vol/logical_vol /awslvm01
+61 mount /dev/aws_vol/logical_vol2 /awslvm02
+62 vgextend aws_vol /dev/nvme3n1
+63 lvextend -L + 2G -n /dev/aws_vol/logical_vol2
+64 resize2f /dev/aws_vol/logical_vol2

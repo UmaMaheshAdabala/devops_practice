@@ -176,67 +176,6 @@ for i in {1.100}; do echo $i; done
 - sort ---> sort files
 - export --> export files
 
-### SSH (Secure Shell)
-
-    Basically the ssh is used to connect to the linux server from our machine. While connecting we use TCP SSH 22 port and then the linux gives us the reply from random TCP ephernal ports ranges from 1024 to 65535.
-    ssh - TCP/22
-    HTTP - TCP/80
-    HTTPS - TCP/443
-    DNS - UDP/53
-
-    - "netstat -a" ( To see the ports that are in connection)
-    -- To ping into 2nd server from 1st server we have to edit the etc/hosts file
-      - nano /etc/hosts
-      - enter the cmd
-        <ipAddress_Of_1st_Serevr> <serevr_name.local> <serevrName>
-        <ipAddress_Of_2st_Serevr> <serevr_name.local> <serevrName>
-      - enter this in ect/hosts file in both the servers
-
-    -- To have passwordless authentication
-       we go to /etc/ssh/sshd_config and we allow password authenticationa and then we create password
-
-    ## Loging into 2nd server from 1st server vice-versa
-
-      - First Create a User
-      - Then create a password for the user
-      - Then create a .ssh folder - "mkdir .ssh"
-      - Then change the pwemissions for the folder "chmod 700 .ssh"
-      - Then create a file authorized_keys in .ssh folder - "touch authorized_keys"
-      - Chgange the permissions "chmod 600 authorized keys"
-      - Then generate keys - "ssh-keygen"
-      - You will get id_rsa, id_rsa.pub files
-      - Then run this command - "ssh-copy-id <nameOfThe2ndServer>" ex: ssh -copy-id server2user@server2
-      - Do this in both the servers
-      - Now you can login from 1st server to 2nd server vice -versa using "ssh <name_of_2nd_server>"
-
-
-      - Login into both the servers
-      - Then goto .ssh folder
-      - Generate keys by "ssh-keygen"
-      - Then paste the public key into other server authorized key file vice versa.
-      - Then ssh into second sever "ssh <ipAddress>"
-
-
-
-
-    --- EDIT the SSH File
-
-    - Edit Port
-    - Go to cd /etc/ssh
-    - Open sshd_congif file
-    - Then change port, allow password Authentication, Permit root user login
-    - Then restart the sshd -"service sshd restart"
-
-    --- Generating Keys
-      We can generate keys using keygen
-
-      - ls .ssh/
-      - ssh -keygen
-      - Then see ls .ssh/
-      - we can see authorized keys file, id_rsa file, id_rsa.pub file
-    --- Password AUth
-      We can generate a password By usnig "passwd <userNameForWhichYouWantToCreate>" cmd
-
 ## Creating pations
 
 - First create a Disk of 15 GB
@@ -253,7 +192,37 @@ for i in {1.100}; do echo $i; done
 - cmd for that is jsut enter lsblk and then enter mount /dev/<partitionName> /<foldername>
 - Finally we have to edit the /etc/fstab and we have to add our mounts there because we may loose our data once the memory got refreshed.
 
+### Practical
+
+```
+lsblk
+
+fdisk </dev/sdb>
+click 'n' to create partition
+click 'p'
+enter '+5G' (this is size)
+
+repeat as no.of times the partitions are required
+
+finally enter 'p' to see them
+
+then
+mkfs.ext4 </dev/sdb1>...
+repeat the same to all blocks
+
+create folders as many as the blocks you created
+
+mount /dev/sdb1 <folder you created>
+
+finally to make them persistent edit /ect/fstab file and add
+
+/dev/sdb1 /<folder created>
+repeact for all the disks you created
+```
+
 ## Creating Logical Volumes
+
+- using partitions we can oly create partitions in a single disk and use them we cant increase space and use that as combined disk. we can achieve that using Logical volumes
 
 - First while creating instance create 3 disks of required size
 - Then see the disks if present or not by "lvmdiskscan" or lsblk to list down the drives
@@ -281,12 +250,267 @@ for i in {1.100}; do echo $i; done
 
 - How to add them permenently in fstab ???
 
+# SSH (Secure Shell)
+
+    Basically the ssh is used to connect to the linux server from our machine. While connecting we use TCP SSH 22 port and then the linux gives us the reply from random TCP ephernal ports ranges from 1024 to 65535.
+    ssh - TCP/22
+    HTTP - TCP/80
+    HTTPS - TCP/443
+    DNS - UDP/53
+
+    - "netstat -a" ( To see the ports that are in connection)
+    -- To ping into 2nd server from 1st server we have to edit the etc/hosts file
+
+- nano /etc/hosts
+- enter the cmd
+  <ipAddress_Of_1st_Serevr> <serevr_name.local> <serevrName>
+  <ipAddress_Of_2st_Serevr> <serevr_name.local> <serevrName>
+- enter this in ect/hosts file in both the servers
+
+  -- To have passwordless authentication
+  we go to /etc/ssh/sshd_config and we allow password authenticationa and then we create password
+
+  ## Loging into 2nd server from 1st server vice-versa
+  - First Create a User
+  - Then create a password for the user
+  - Then create a .ssh folder - "mkdir .ssh"
+  - Then change the pwemissions for the folder "chmod 700 .ssh"
+  - Then create a file authorized_keys in .ssh folder - "touch authorized_keys"
+  - Chgange the permissions "chmod 600 authorized keys"
+  - Then generate keys - "ssh-keygen"
+  - You will get id_rsa, id_rsa.pub files
+  - Then run this command - "ssh-copy-id <nameOfThe2ndServer>" ex: ssh -copy-id server2user@server2
+  - Do this in both the servers
+  - Now you can login from 1st server to 2nd server vice -versa using "ssh <name_of_2nd_server>"
+
+  - Login into both the servers
+  - Then goto .ssh folder
+  - Generate keys by "ssh-keygen"
+  - Then paste the public key into other server authorized key file vice versa.
+  - Then ssh into second sever "ssh <ipAddress>"
+
+  --- EDIT the SSH File
+  - Edit Port
+  - Go to cd /etc/ssh
+  - Open sshd_congif file
+  - Then change port, allow password Authentication, Permit root user login
+  - Then restart the sshd -"service sshd restart"
+
+  --- Generating Keys
+  We can generate keys using keygen
+  - ls .ssh/
+  - ssh -keygen
+  - Then see ls .ssh/
+  - we can see authorized keys file, id_rsa file, id_rsa.pub file
+    --- Password AUth
+    We can generate a password By usnig "passwd <userNameForWhichYouWantToCreate>" cmd
+
+# SSH
+
+- We can create our own keys using `ssh-keygen`
+- We can copy that public key an store it inside our aws and use the private to connect to the server.
+- Once login we have all the keys in `.ssh/authorizedkeys` file.
+
+- For better security we can change the port also.
+- For that we have to edit `sshd_config` file. In that change the `port to 4444`
+- To enable password login we can uncomment the passwordAuthentication is `sshd_config` file
+
+- We can create a user and assign a password to that user and can login as that user using password without the pem key.
+- I f we want we can create seperate .pem key for that user.
+
+- Create a user.
+- switch to that user `su - <uname>`
+- Then create `.ssh` folder.
+- Create `authorized_keys` file.
+- Restrict the file permissions only to that user.
+- Then generate keys using puttygen or key gen and paste the public key inside the authorized_keys file.
+- And use the private key while connecting to the server.
+
+## Connect b/w servers locally
+
+- Edit the /etc/hosts file
+- Add ip followed by locak name on both the servers.
+
+- Then create users in both servers and enable password authentication.
+- Login as the users
+- Then create the authorized key file in `.ssh` folder
+- in the same folder create the public key and private key using the `keygen`.
+- Then copy the 2nd server public key into first server `authorizedkey` file.. vice versa.
+- Then you can connect b/w the servers.
+
+## SSH Tunneling
+
+- To connect securely to a private instance like RDS, Redis Cache inside a private subnet we use ssh tunneling.
+- `ssh -L 3307:rds.private.amazonaws.com:3306 ec2-user@bastion`
+- For tunneling we use port forwarding. Through Port Forwarding we forward the traffic from local servers (local port) to the private instances (remote port).
+- And the instance(RDS or Redis) is not publily accessed. It kept securely in private subnet. and we have connected within the tunnel's bastion host, not via open internet
+
+- Similarly let say you have a website running on your local and your friend want to access it through internet. So we use ssh tunneling for that so we can securely access it.
+
+# SSH into Multiple Servers
+
+1. Basic
+
+- Basically the very normal and basic approach is having same private and public key for all the instances.
+- So that the controller instance can ssh into all the instances easily...
+- But it is too risky as if the controller is compromised or hacked then all the 100's of worker servers also hacked
+
+2. Bastion(Manual HOP)
+
+- In this approach we have a bastion host and then we have worker servers.
+- And we can securely shh into all the worker nodes in the private subnet
+- But still we need the private key of the private instances inside the Bastion host.
+
+3. Proxy Jump(Using Bastion host)
+
+- Create SSH Config On LAPTOP `~/.ssh/config`
+- Add
+
+  ```
+  Host bastion
+  HostName BASTION_PUBLIC_IP
+  User ec2-user
+  IdentityFile ~/.ssh/prod-key.pem
+
+  Host private-server
+  HostName PRIVATE_IP
+  User ec2-user
+  IdentityFile ~/.ssh/prod-key.pem
+  ProxyJump bastion
+
+  ```
+
+- This file exists only on local laptop.
+
+- Now run `ssh private-server`
+- INTERNAL FLOW
+- STEP 1 — SSH Reads Config
+
+SSH client sees:
+
+ProxyJump bastion
+
+Meaning:
+
+“To reach private-server,
+first connect to bastion.”
+STEP 2 — SSH Connection to Bastion
+
+Laptop establishes:
+
+Laptop ←encrypted SSH→ Bastion
+
+using:
+
+prod-key.pem
+STEP 3 — Bastion Opens TCP Connection
+
+Bastion now creates raw TCP connection:
+
+Bastion → PrivateServer:22
+
+VERY IMPORTANT:
+
+NOT second SSH login
+
+Just TCP forwarding.
+
+STEP 4 — SSH Traffic Relayed
+
+Now traffic path becomes:
+
+Laptop SSH Client
+↓ encrypted SSH
+Bastion
+↓ raw TCP forwarding
+Private Server
+STEP 5 — Laptop Performs Direct Authentication
+
+THIS IS THE MOST IMPORTANT PART.
+
+Authentication happens between:
+
+Laptop ↔ Private Server
+
+NOT:
+
+Bastion ↔ Private Server
+Meaning
+
+Private server validates:
+
+your laptop's key
+
+directly.
+
+- Here Bastion NEVER stores private key.
+
+This is WHY ProxyJump is superior.
+
+- Instead of writing all the instances details in the config file we can write that as
+
+- ```
+  Host bastion
+    HostName 3.10.x.x
+    User ec2-user
+    IdentityFile ~/.ssh/prod-key.pem
+
+
+  Host 10.0.2.\*
+  User ec2-user
+  IdentityFile ~/.ssh/prod-key.pem
+  ProxyJump bastion
+
+  ```
+
+- But if we are using automations like ansible or jenkins then the pem key has to be stored in their server and the connection will be like
+
+- Ansible Controller
+  ├── private keys
+  ↓
+  Bastion
+  ↓
+  100 Servers
+
+  (but the bastion doesn't have the private key)
+
+# SSM(System Session Manager)
+
+- AWS Systems Manager Session Manager is a secure way to connect with servers instead of SSH.
+- It has no port and is authorized using IAM
+- So users will have only some particular permissions. so we use SSM insted of SSH for very secure applications.
+- Even we can have port forwarding and tunneling for SSM.
+- In SSM we don't have inbound connection to Server. the server has outbound connection to SSM
+
+- One more Advantage is we don't need Bastion Host to connect to private instances in a private subnet.
+
+- Steps:👇
+- Launch a EC2 instance
+- create a IAM role.
+- Give
+
+```
+
+aws ssm start-session \
+ --target i-123456 \
+ --document-name AWS-StartPortForwardingSessionToRemoteHost \
+ --parameters '{"host":["mydb.xxxxxx.rds.amazonaws.com"],"portNumber":["3306"],"localPortNumber":["3307"]}'
+
+```
+
+- Laptop
+  ↓ IAM + MFA
+  AWS SSM
+  ↓
+  Private EC2
+  ↓
+  Private RDS
+
 ## CronScheduler
 
 - When You want to execute a task at a particular time or periodically then " Cron Scheduler will take care of it "
 
   # Cron Commands
-
   - First Launch an instnace
   - Login into it
   - Go to etc/cron folder
@@ -334,11 +558,16 @@ for i in {1.100}; do echo $i; done
 # USer Permissions
 
 - chown <username> <filename> - to change owner of a file.
--
 
-## Linux Troubleshooting
+## Giving a user in a group more permissions than other.
 
-# Ping (Packet Internet Grouper)
+- let say there is a developers group and in that developers group there is a Lead. and the lead need more permissions.
+- So at that time if we have more leads who need similar permission then we can create a leads groups and give permissions.
+- But if we have single lead then `sudo setfacl -m u:lead1:rwx /production`
+
+# Linux Troubleshooting
+
+## Ping (Packet Internet Grouper)
 
 - CHECK IF HOST IS REACHABLE
 - we can ping from one server to other server using- " ping <ipaddress-of-2nd-server> "
@@ -349,66 +578,88 @@ for i in {1.100}; do echo $i; done
   - ping -c 10 <ip> pings 10 times c-count
   - ping -q -c 5 <ip> // pings quietly 5 times
 
-# telnet ( Telephone N/W)
+## telnet ( Telephone N/W)
 
 - CHECK IF SPECIFIC PORT IS OPEN
 - " telnet <ipAddress / DNS Name> <port> "
 - we can use telnet to connect to server that is in other security group
+- We use this to check the open port of other server
 
-# ifconfig
+## netstat / SS
+
+- we use this to check the ports and process of our own machine.
+- But `SS` is the advanced cmd, it does the same task. but more efficiently. It directly deals with the kernel instead of `\proc` file.
+
+## ifconfig
 
 - ifconfig gives your ip
 - "netstat -tulnp" gives the dynamic port connection b/w server to our machine
 - Apart from netstat we use ss -tulnp.
 
-# nslookup
+## nslookup
 
 - we can get the server name and some other details using - " nslookup <ipadress> "
 - To see or to debug the DNS related issues.
 
-# Route
+## Route
 
 - We can see the active routes by using "route -n"
-- Gives Route Table
+- Gives and manages Route Table of the server
 
-# host
+## host
 
 - "host <dnsName>" gives you the alias name in the dns table and its ip address
 
-# curl
+## curl
 
 - curl is used to test the website or to downlod some files from internet
 - It is basically to check URL
+- `curl -I https://example.com` - Shows Headers, server type, Redirects, Content type
+- `curl -v https://example.com`- DNS resolution, TCP connection, SSL handshake, Request headers, Response headers
+- `curl -L http://example.com` - With -L, curl automatically follows redirects.
+- `curl -O https://example.com/file.zip` - Download files.
 
-# wget
+## wget
 
 - wget is mainly to download something
 
-# dig
+## dig
 
 - gives the domain information group
 - ex: dig www.facebbok.com
 
-# Traceroute
+## Traceroute
 
 - Basically checks from the traffic goes to where
 - traceroute shows each hop (router or gateway) your data passes through before reaching its final destination — helping you identify network delays or connection problems.
 
-# Top
+- It tells how the packet flow from source to destination
+
+## Top
 
 - Top is used to get the CPU Utilization related data
 
-# htop
+## htop
 
 - similar to top but gives much UI exp than top.
 
-# Iptraf
+## Iptraf
 
 - Gives the trafic and ip's that we connected to in a gui way
 
-# wireshark
+## wireshark
 
 - Wireshark is a powerful network protocol analyzer used for capturing and inspecting network traffic in real time. It is commonly used for network troubleshooting, security analysis, protocol development, and ethical hacking
+
+## nmap
+
+- To see the live ports of other server
+
+## tcpdump
+
+- when logs are not clear and the frontend is calling backend but the backend is not responding then we use tcpdump.
+- It will act as a CCTV and tells who the traffic leaves and comeback.
+- `sudo tcpdump -i eth0 port 8080`
 
 ### Use Cases
 
@@ -469,3 +720,26 @@ for i in {1.100}; do echo $i; done
 | Print only matching lines    | `sed -n '/pattern/p' file.txt`               | Like `grep`                             |
 | Insert line before match     | `sed '/pattern/i\This is new line' file.txt` | Inserts before lines matching "pattern" |
 | Append line after match      | `sed '/pattern/a\This comes after' file.txt` | Appends after lines matching "pattern"  |
+
+- Example: `sudo sed -i '/ swap / s/^/#/' /etc/fstab`
+
+👉 here -i means interatively
+
+- `/ swap /` means it will search for 'swap' word
+- `s/^/#/` means the syntax is s/old/new/ here `^` is to replace in every line starting and id will add `#`
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```

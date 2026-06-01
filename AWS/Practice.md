@@ -1,3 +1,116 @@
+3. Proxy Jump(Using Bastion host)
+
+- Create SSH Config On LAPTOP `~/.ssh/config`
+- Add
+
+  ```
+  Host bastion
+  HostName BASTION_PUBLIC_IP
+  User ec2-user
+  IdentityFile ~/.ssh/prod-key.pem
+
+  Host private-server
+  HostName PRIVATE_IP
+  User ec2-user
+  IdentityFile ~/.ssh/prod-key.pem
+  ProxyJump bastion
+
+  ```
+
+- This file exists only on local laptop.
+
+- Now run `ssh private-server`
+- INTERNAL FLOW
+- STEP 1 — SSH Reads Config
+
+SSH client sees:
+
+ProxyJump bastion
+
+Meaning:
+
+“To reach private-server,
+first connect to bastion.”
+STEP 2 — SSH Connection to Bastion
+
+Laptop establishes:
+
+Laptop ←encrypted SSH→ Bastion
+
+using:
+
+prod-key.pem
+STEP 3 — Bastion Opens TCP Connection
+
+Bastion now creates raw TCP connection:
+
+Bastion → PrivateServer:22
+
+VERY IMPORTANT:
+
+NOT second SSH login
+
+Just TCP forwarding.
+
+STEP 4 — SSH Traffic Relayed
+
+Now traffic path becomes:
+
+Laptop SSH Client
+↓ encrypted SSH
+Bastion
+↓ raw TCP forwarding
+Private Server
+STEP 5 — Laptop Performs Direct Authentication
+
+THIS IS THE MOST IMPORTANT PART.
+
+Authentication happens between:
+
+Laptop ↔ Private Server
+
+NOT:
+
+Bastion ↔ Private Server
+Meaning
+
+Private server validates:
+
+your laptop's key
+
+directly.
+
+- Here Bastion NEVER stores private key.
+
+This is WHY ProxyJump is superior.
+
+- Instead of writing all the instances details in the config file we can write that as
+
+- ```
+  Host bastion
+    HostName 3.10.x.x
+    User ec2-user
+    IdentityFile ~/.ssh/prod-key.pem
+
+
+  Host 10.0.2.\*
+  User ec2-user
+  IdentityFile ~/.ssh/prod-key.pem
+  ProxyJump bastion
+
+  ```
+
+# CRR (Lambda to EC2)
+
+- Account A Lanbda -----> Account B EC2
+
+- In Account A
+- create a role for service lambda and then create a `Assume Role` policy to assume the B account Role i.e `arn:aws:iam::\*:role/(role of Account_B)`
+- In account B
+- create a role with account A number
+- allow required ec2 permissions
+- Then edit the trust relations so that only account A will use the role i.e `arn:aws:iam:<Account A id>:root/<role of account A>`
+
 # SSL
 
 - without ssl we have to send plain data b/w server and client.
@@ -459,6 +572,11 @@ So cooldown is inside ASG control loop.
 # Route53
 
 - The Route53 is a AWS Managed service to manage the DNS Queries.
+- Roye53 uses UDP port by default
+- Route53 works under ANY CAST means multiple servers having same IP. So there will be low latency and high availability.
+- CNAME cannot exist at root of a domain. means in Rules example.com cannot have CNAME because the root of a domain must have NS and SOA rules not CNAME.
+- But www.example.com can have CNAME, because www.example os not a root domain it's a sub domain so it can have it. That's why we use A Record for mapping ELB to domain in route53.
+- Private Hosted Zones are used to host the domain which are used inside the VPC. to have internal communication b/w services in ECS or some other we use PHZ.
 
 ## TTL
 
@@ -484,7 +602,9 @@ Period: 60 seconds
   --dimensions Service=Login \
   --value 120 '''
 
-- This will create. a custom metrics with MyApp as name and Service as Dimention(Filter). In that dimention we have service section. In that section we have login, payments and other services also.. for that service we have the metrics for latency.
+- This will create. a custom metrics with MyApp as name and Service as Dimension(Filter). In that dimension we have service section. In that section we have login, payments and other services also.. for that service we have the metrics for latency.
+
+- We have monitoring & observability, monitoring just tells what happens and sends alerts but observability will tells why and how.. it uses logs to tell why and traces to tell how and metrics to tell what happened.
 
 ## Ingession
 
@@ -505,7 +625,7 @@ Period: 60 seconds
 
 ## Application Signals
 
-- The service only provide the CPU Utilization and memory related data. Rest of the main things like Latency, error Rate, Payment Failures, No of Requests we have to send Explicitly using custom metrics.
+- The service only provide the CPU Utilization and memory related data. Rest of the main things like Latency, error Rate, Payment Failures, No of Requests... we have to send Explicitly using custom metrics.
 - So to avoid this AWS came up with new solutin called Application Signals. Once this was configured the Cloudwatch Itself collect the Data with out any custom metrics.
 - we don't need to calculate all the Error Rates, No.of Requests all these things. The cloudwatch itself will take care and the data can be seen inside the cloudwatch.
 
@@ -646,4 +766,29 @@ suggests root cause
 
 - Congif is like a audit of whether the resources are following the compliances or not.
 - We can have the AWS pre defined rules or custom rules that we can write via Lambda functions.
-- We can store the CI (Configuration Items), Configuration History, compliance History and the Confuguration Snapshots inside the S3
+- We can store the CI (Configuration Items), Configuration History, compliance History and the Configuration Snapshots inside the S3
+
+# Event Bridge
+
+- Event Bridge is an Event Driven workflow manager
+- when ever an event happens in the aws, that event was forwarder via event buses to event bridge and then the rules will evalute the event and trigger the respective Targets.
+- We can also schedule some targets and these event will happen as per the CRON we provided.
+
+# Cloud Trail
+
+- Cloud Trail is like a AUID of Operations performend by USERS on AWS resources.
+- Basically it was automatically recorder.
+- But if we want the audit to be stored for long time we create a custom cloudtrail and store them in s3
+- If we want Management Trails like what action performed on the resources like creating instance, deleting and updating the instance we use Managed Events
+- If we want data events like what actions performed inside the resource like what all data uploaded, what all data deleted we use Data Trails
+- If we want to know if any melicious action happens on the rsources we use Trail Insignts.
+
+# CloudFront
+
+# ECS
+
+## Diff b/w Task Role and Task Execution Role
+
+- Task Role: Used by the Application Running. To enable access to AWS services for the Application.
+
+- Task Execution Role: Used by the ECS Agents/ Container Agents to access the aws services.

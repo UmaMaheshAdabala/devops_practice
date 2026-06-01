@@ -269,7 +269,7 @@ Here’s a categorized list of essential Linux commands, from basic to advanced.
 | `apt install <package>` | Install a package. |
 | `apt remove <package>` | Remove a package. |
 
-**For RHEL-based (CentOS, Fedora)**
+**For RHEL-ba   (CentOS, Fedora)**
 | Command | Description |
 |---------|------------|
 | `dnf install <package>` | Install a package. |
