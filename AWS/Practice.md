@@ -1,3 +1,9 @@
+# IP
+
+- How does the host A in n/w A knows that whether to send a packet to router or to the to it's local n/w inorder to send the packet to n/w B?...
+
+- The N/w A know its own IP and its own subnet Mask then it will AND the subnetmask with its IP and it will get its N/W Id. simularly it performs the AND with Ip of host B and the Subnetmask of host A. because it doesn't know the actual subnet mask of host B. once done if the N/W id that it got after the AND operation for both of them is same, then it will get to know that both of them are in same n/w and send the packet to local n/w else it sends it to router..
+
 3. Proxy Jump(Using Bastion host)
 
 - Create SSH Config On LAPTOP `~/.ssh/config`
@@ -100,16 +106,212 @@ This is WHY ProxyJump is superior.
 
   ```
 
-# CRR (Lambda to EC2)
+## --------------------
 
-- Account A Lanbda -----> Account B EC2
+# VPC
+
+## Virtual Private Gateway
+
+- Using thing we can connect our corporate offices to the VPC. i.e we connect the services out of the vpc with the services within the VPC.
+- we can connect as many as you want want the band width for data transfer is very low. i.e 1.25GB per sec.
+
+## ENI
+
+- ENI is a elastic network interface which is a NC (Network card) for the Instance or ECS Task.
+- It is like a port to a Device and NC to a Server.
+- To which all the Prublic and Private IP's, Security Groups, Subnet, Elastic IP and Mac Address is attached.
+
+## Route tables
+
+- Internally when a request hits the server the route table has to send the request to specific Subnet..
+- For that the route tables use subnet masking, it take the IP and then use the subnet mask and perform "AND" operation with IP and generate the N/W ID. and forward traffic to that N/W.
+
+## Customer Gateways | VPN | Virtual Private Gateways
+
+- On the onprem side we have Customer Gateway and On the aws Side we have VPG. So using a VPN connection we can connect from onprem to aws vpc with IPSEC(A virtual Encryoted security Tunnel).
+
+- There will be a route table created in our vpc if we want to connect to onprem from vpc then there will be a route in route table like onperm IP then navigate to "virtual Private Gateway".
+
+- Similarly if we want onprem to connect to VPC then on onprem side we need a Route table.
+
+- VPN IPSec Uses either Dynamic VPN or Static VPN
+- If we use static VPN then if any tunnel fails we have manually fix it. But in case of Dynamic VPN we use BGP it has "AS Number" and it can route traffci to other tunnel if its tunnel fails.
+
+- We can have multiple Routers and this is known as Resilient Dynamic VPN where we have 4 VPN Tunnels.
+- And also we can connect to multiple VPC's from the onprem.
+
+## NAT Gateway
+
+- Network access Translation Gateway. this is used by private instance or servers to access internet.
+- The NAT provides a public IP to the private instance. the request goes from private instance to NAT, then NAT translates the Private IP of the Instance to public IP of its own and then forward the request to destination, then it takes the responce and sends that back to private instance.
+
+- If there are 3 servers using the NAT, the NAT will provide the same IP for all the 3 instances, but the prorts that NAT uses for forwarding the responce is diff even the ports that EC2 uses is same.
+
+- 10.0.2.10:50001 ( instance -1)
+  |
+  v
+  google.com:443
+
+Then NAT translates
+
+- 54.10.10.10:60001
+  |
+  v
+  google.com:443
+
+- 10.0.2.11:50001 (Instance -2 )
+  |
+  v
+  google.com:443
+
+Then NAt Translates
+
+- 54.10.10.10:60002
+  |
+  v
+  google.com:443
+
+- Response Traffic
+
+- Google replies:
+
+  54.10.10.10:60001
+  54.10.10.10:60002
+  54.10.10.10:60003
+
+The NAT Gateway consults its translation table:
+
+60001 -> 10.0.2.10:50001
+60002 -> 10.0.2.11:50001
+60003 -> 10.0.2.12:50001
+
+- Why NAT won't allow inbound?
+- because a NAT Gateway is stateful and only allows return traffic for connections that were initiated from inside the private subnet.
+- Because NAT is stateful when ever a request happeen from subnet to internet the nat remember the path and allow the destination to send inbound traffic to subnet, but whenever there is a direct ibound traffic to subnet with out any outbound traffic from subnet to internet, the NAT won't know the path anmd it wont allow the traffic
+
+## VPC Endpoints | Interface Endpoints
+
+- The VPC Endpoint creates a private connection b/w the s3 or dynamodb to our vpc for secure communication without internet.
+- The Endpoint will create a route in the route table with the prefix(why prefix for s3 because s3 has number of IP's so we use prefix) and the endpoint .
+- Why only s3 and dynamodb why not other services? Because there is a large amount of data stored in S3 and Dynamodb, so if we use interfaces to communicate then the data tarnsfer will be slow and lot of ENI's are required as there will be many connections happening to the s3 and dynamodb.
+- So for s3 and dynamodb we go with Gateway Endpoints and for rest of the services we use interfaces as they are API driven workflows so they are well fit for AWS Private Links.
+
+- What is Private Link?
+- Private Link is a Private Network through which the AWS services talk.. without internet. Thins will create a ENI and assigns a private IP within the VPC. So your instance will communicate to the Private IP of the interface endpoint and then the traffic is forwarded to Private Link then to the AWS Services.
+
+## Security Groups
+
+- Security Groups are statefull. And you may think that if there is a inbound rule then automatically outbound traffic is allowed.
+- But that doesn't work like that the stateful nature means if there is a incoming connection from laptop ---> Ec2 then there will be a outbount connection from EC2 ----> laptop happens, even if there is a inbound rule that allows connection from laptop --> EC2 and you haven't send any packet to EC2 and you are expecting a Packet from Ec2 to your local machine that will be blocked and won't be happen.
+
+## VPC Peering
+
+- We can connect two vpc's and communicate b/w them using VPC peering.
+- we have to send peering request and then, we have to edit the route tables.
+
+## Carrier Gateway
+
+- Carrier Gateway is used for ultra low latency work loads, Wavelength Zones place AWS infrastructure physically inside telecom providers' networks (such as 5G provider networks) to achieve ultra-low latency.
+
+- Problem
+
+  A workload running inside a Wavelength Zone does not use a traditional Internet Gateway for public connectivity.
+
+  AWS needed a mechanism that connects workloads directly to the telecom carrier network.
+
+  That mechanism is the Carrier Gateway.
+
+## Route Server
+
+- The Route Tables that we use will manually manage the route and it is static.
+- If in a organization there are n number of route and transist gateways and connecting to multiple no prem servers, then we need a route that dynamically manages the routes, that is Route Server and it uses BGP to manage the routes Dynamically.
+
+## DHCP Options..
+
+- When we launch a EC2 Instance it need the domain and IP and SubnetMAsk and Gateway right, DHCP will provide all the info for them.
+
+- Let say before AWS all the applications and Databases are onPrem. And once the AWS came we move all the Application to AWS. if whole App+DB is in AWS the. it is fine.
+
+- Let say only App is in Aws and DB is in onPrem. And the DNS of the DB is db01.company.local and the ip is 192.168.2.5
+- Now the Application is in AWS and it's dns is ec2.local.aws. and ip is 172.168.0.9.
+- And when the App want's to connect to DB it requests db01.company.local but it get's no domain found, because the aws won't know the onPrem DNS.
+- So in such situations, we create custom DHCP and add the onPrem Domain and it's IP so that our Application would use it.
+
+## Prefix List
+
+- Let say you have different offices at diff locations and you want to allow ssh from every Office, So you have to go to security group and add IP of each of the office, and if any new office added or removed you have to edit all the security groups.
+
+- So to avoid that we need a logical group so that you can add that office to that grop and assign that group to securityu groups, And simply you can edit that group details if you want to add a office or delete any office.
+
+- These prefix lists are used widely in such situations.
+
+## --------------------
+
+# IAM
+
+- ☀️ List All the ec2 instances in Account A and Accound B from Accound C Using Lambda.
+  1. create role in Account-A with the service that want to access the 2nd account.
+  2. Create a role in Acc-B with the Acc-A ID and attach the required Permissions.
+  3. Edit Trust Relationship with the Account-A role Name.
+  4. In Account-A add assumerole permssion with Acc-B role Name.
+
+- ☀️ Provision Ec2 insatces in Account A, B, C using Terraform and IAM Roles.
+  1. create a user in main account and roles in All the 3 accounts.
+  2. In the main account create a role and assume all the 3 roles and attach the role to the user.
+  3. And in all the 3 roles assume the Main account role.
+  4. And write the terraform code with modules(most preferesd)
+  5. Inside the provider block add assume role and mention the role arn that each provider has to use.
+  6. And in the local in the aws configuration file add the user's credentials and in the aws config file add the role name.
+
+- ☀️ How STS Token Works
+
+  ✍🏻 When the service calls the assume role to access the role's permissions the aws will check whether it is authenticated or not from the destination trust entities, then it will check the permissions tab of the destination role. Once every thing is fine then it will generate the sts generates the credentails. It will generate the Access Key, secret key and the session token and also the expiry date.
+  - Once the token gona expire in next 15 mins and the task in not yet complete the aws sdk will automatically calls the sts to generate new credentials.
+
+  - And when the new token was created immediately the AWS will upate the credentails cache with new credentails even the pas one is valid for some time.
+
+  - The Session token is a proof for aws that the credetials are actually from aws not from outside world.
+
+- Instead of Users We can Use Roles along with SSO Identity Centre to achive the same but more in secure way.
+
+## CRR (Lambda to EC2)
+
+- Account A Lambda -----> Account B EC2
 
 - In Account A
-- create a role for service lambda and then create a `Assume Role` policy to assume the B account Role i.e `arn:aws:iam::\*:role/(role of Account_B)`
+- create a role for service lambda and then create a `Assume Role` policy to assume the B account Role i.e `arn:aws:iam::*:role/(role of Account_B)`
 - In account B
 - create a role with account A number
 - allow required ec2 permissions
-- Then edit the trust relations so that only account A will use the role i.e `arn:aws:iam:<Account A id>:root/<role of account A>`
+- Then edit the trust relations so that only account A will use the role i.e `arn:aws:iam::<Account A id>:role/<role of account A>`
+
+# ------------
+
+# S3
+
+## Access Points
+
+- Let say ino= your buckets we have different objects and we need access to particular object from a particular team only not every one. So we deal with bucket policies.
+
+- But dealing with many policies would be difficult, so we move to Access poins where we provide access to particular team only, this is also via policies only but the way of implementation is different.
+
+# -----------
+
+# EC2
+
+# ------------
+
+# EBS & EFS
+
+- EBS is a kind of block storage that we attach to a single instance where there is no shared usecase.
+- We use snapshots to take backups of the volumes.
+- These backups are point of time backups.
+
+- EFS is a shared file sh=ystem where we can attach itvto multiple instances
+
+- ☀️ Connect EFS to EC2 and Lambda.
+
+# ------------
 
 # SSL
 

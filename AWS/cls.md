@@ -315,6 +315,20 @@ A VPC Interface Endpoint is like a dedicated phone line inside a company. You ca
 - This is more secure and low cost.
 - IMG- AWS_DX.
 
+## NAT GATEWAY
+
+- A NAT (Network Address Translation) Gateway is a managed service in AWS that allows instances in a private subnet to access the internet or other AWS services while preventing inbound connections from the internet.
+
+- In a Virtual Private Cloud (VPC), private subnets do not have direct internet access. However, instances in these subnets might need to:
+
+- Download software updates.
+
+- Communicate with external APIs.
+
+- Connect to AWS services that require internet access.
+
+- A NAT Gateway solves this problem by allowing outbound traffic to the internet while blocking unsolicited inbound connections.
+
 ## VPC Peering
 
 - VPC peering is used to connect 2 vpc's and they can communicate with each other.
@@ -346,20 +360,6 @@ aws ec2 create-route --ro rtb-<id> --destination 0.0.0.0/0 --gateway-id igw-<id>
 # Attach subnet to routetable
 
 aws ec2 associate-route-table --route-table-id rtb<id> --subnet-id <subnet-id>.
-
-## NAT GATEWAY
-
-- A NAT (Network Address Translation) Gateway is a managed service in AWS that allows instances in a private subnet to access the internet or other AWS services while preventing inbound connections from the internet.
-
-- In a Virtual Private Cloud (VPC), private subnets do not have direct internet access. However, instances in these subnets might need to:
-
-- Download software updates.
-
-- Communicate with external APIs.
-
-- Connect to AWS services that require internet access.
-
-- A NAT Gateway solves this problem by allowing outbound traffic to the internet while blocking unsolicited inbound connections.
 
 ### IAM
 
